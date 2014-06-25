@@ -2,12 +2,15 @@
 Tags: profitshare, affiliates, afiliati, conversion, conversie
 Requires at least: 3.0
 Tested up to: 3.9.1
-Stable tag: trunk
+Stable tag: 1.0
 Contributors: Conversion.ro
 
-== Description ==
-Plugin-ul converteste toate link-urile directe catre advertiseri existenti in Profitshare in link-uri care au paramentru de tracking pentru inregistrarea conversiilor aferente promovarii acestora.
+Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare
 
+== Description ==
+Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare. 
+
+Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Romania. Inscrie-te gratuit ca afiliat pe profitshare.ro, iar la promovarea magazinelor partenere prin link-uri de afiliere vei castiga comisioane din fiecare vanzare online pe care o aduci.
 
 
 == Installation ==
