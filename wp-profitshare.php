@@ -98,9 +98,9 @@ function account_settings() {
 		$title_div			= 'Neconectat';
 	}
 
-	if ( isset($_GET["ps_status"]) && $_GET["ps_status"] == true ) {
-		echo '<div id="message" class="updated"><p>Datele API au fost salvate, iar conexiunea s-a realizat cu succes.</p></div>';
-	} else if(isset($_GET["ps_status"]) && $_GET["ps_status"] == false) {
+	if ( get_user_meta( $current_user->ID, 'is_curl_profitshare_connected', true ) ) {
+		echo '<div id="message" class="updated"><p>Datele API sunt corecte, iar conexiunea s-a realizat cu succes.</p></div>';
+	} else if( get_user_meta( $current_user->ID, 'is_curl_profitshare_connected', false ) ) {
 		echo '<div id="message" class="error"><p>Datele API sunt incorecte sau au apărut erori de conectare.</p></div>';
 	}
 	
