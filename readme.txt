@@ -12,7 +12,7 @@ Plugin-ul converteste toate link-urile directe catre advertiseri existenti in Pr
 
 == Installation ==
 
-1. Incarca 'wp-profitshare' în folderul `/wp-content/plugins/
+1. Incarca 'wp-profitshare' in folderul `/wp-content/plugins/
 2. Activeaza plugin-ul din sectiunea 'Plugins' din admin-ul WordPress
 3. La activare vei regasi in bara de lucru de pe blogul tau Wordpress un nou meniu numit 'Profitshare'.
 4. Completeaza setarile din meniul 'Setari Plugin' cu API User si API Key. Poti afla API User si API Key accesand contul tau Profitshare (http://profitshare.ro/affiliate/account). In cazul in care aceste detalii nu se regasesc in contul tau - trimite o cerere pentru activarea acces API la support@profitshare.ro
