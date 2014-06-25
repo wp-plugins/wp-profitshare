@@ -23,6 +23,7 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 
 
 == Functionality ==
+
 <strong>Pagina Setari</strong>. Pentru inceput, in pagina "setari", trebuie sa completezi campurile API user si API key cu datele specifice din contul tau Profitshare (http://profitshare.ro/affiliate/account). Dupa stabilirea conexiunii vei gasi in partea de jos a acestei pagini optiunea de a genera linkuri de afiliere Profitshare in intreaga baza de date a siteului tau. Recomandam crearea unui backup al bazei de date inainte de rularea acestei functii. 
 
 <strong>Pagina Conversii</strong>. Ai posibilitatea generarii unui link Profitshare, simplu si rapid. In plus, vizualizezi ultimele 25 de conversii. 
