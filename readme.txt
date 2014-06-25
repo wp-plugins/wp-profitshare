@@ -43,8 +43,7 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 1. Pagina de setari ale pluginului.
 2. Pagina de afisare a conversiilor si castigului curent.
 3. Pagina unde sunt inregistrate toate linkurile convertite prin intermediul pluginului.
-4. Informatii utile: noutati din blogul Profitshare si sectiunea de intrebari si raspunsuri frecvente
-
+4. Informatii utile, noutati din blogul Profitshare si sectiunea de intrebari si raspunsuri frecvente
 == Changelog ==
 = 1.0 =
 Stable release for affiliates.
