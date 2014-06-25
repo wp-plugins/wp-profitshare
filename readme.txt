@@ -5,7 +5,7 @@ Tested up to: 3.9.1
 Stable tag: 1.0
 Contributors: Conversion.ro
 
-Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare
+Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare.
 
 == Description ==
 Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare. 
@@ -23,13 +23,13 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 
 
 == Functionality ==
-Pentru inceput, in pagina "setari", trebuie sa completezi campurile API user si API key cu datele specifice din contul tau Profitshare (http://profitshare.ro/affiliate/account). Dupa stabilirea conexiunii vei gasi in partea de jos a acestei pagini optiunea de a genera linkuri de afiliere Profitshare in intreaga baza de date a siteului tau. Recomandam crearea unui backup al bazei de date inainte de rularea acestei functii. 
+<strong>Pagina Setari</strong>. Pentru inceput, in pagina "setari", trebuie sa completezi campurile API user si API key cu datele specifice din contul tau Profitshare (http://profitshare.ro/affiliate/account). Dupa stabilirea conexiunii vei gasi in partea de jos a acestei pagini optiunea de a genera linkuri de afiliere Profitshare in intreaga baza de date a siteului tau. Recomandam crearea unui backup al bazei de date inainte de rularea acestei functii. 
 
-Pagina Conversii. Ai posibilitatea generarii unui link Profitshare, simplu si rapid. In plus, vizualizezi ultimele 25 de conversii. 
+<strong>Pagina Conversii</strong>. Ai posibilitatea generarii unui link Profitshare, simplu si rapid. In plus, vizualizezi ultimele 25 de conversii. 
 
-Istoric link. Vizualizezi istoricul generarii de linkuri in reteaua Profitshare prin intermediul pluginului WP Profitshare; atat pe cele generate manual din meniul conversii, cat si cele generate automat. 
+<strong>Istoric link</strong>. Vizualizezi istoricul generarii de linkuri in reteaua Profitshare prin intermediul pluginului WP Profitshare; atat pe cele generate manual din meniul conversii, cat si cele generate automat. 
 
-Informatii utile. Afli cele mai proaspete informatii printr-un feed direct de pe blogul Profitshare si iti raspundem la cele mai frecevente intrebari.
+<strong>Informatii utile</strong>. Afli cele mai proaspete informatii printr-un feed direct de pe blogul Profitshare si iti raspundem la cele mai frecevente intrebari.
 
 
 == Changelog ==
