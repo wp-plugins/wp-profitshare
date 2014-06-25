@@ -3,7 +3,7 @@
  * Plugin Name: WP Profitshare
  * Plugin URI: http://www.profitshare.ro
  * Description: Plugin-ul converteste toate link-urile directe catre advertiseri existenti in Profitshare in link-uri care au paramentru de tracking pentru inregistrarea conversiilor aferente promovarii acestora. 
- * Version: 1.0.0 Beta Test
+ * Version: 1.0
  * Author: Conversion
  * Author URI: http://www.conversion.ro
  * License: GPL2
