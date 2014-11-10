@@ -10,46 +10,46 @@ function ps_init_settings() {
 	 */
 	global $wpdb;
 	$query = array();
-	$query[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_advertisers (
-		ID smallint(5) unsigned NOT NULL auto_increment,
-		advertiser_id mediumint(5) unsigned NOT NULL,
-		name char(250) NOT NULL,
-		link char(50) NOT NULL,
-		UNIQUE KEY (advertiser_id),
-		UNIQUE KEY (name),
-		PRIMARY KEY (ID)
+	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_advertisers (
+		`ID` smallint(5) unsigned NOT NULL auto_increment,
+		`advertiser_id` mediumint(5) unsigned NOT NULL,
+		`name` char(250) NOT NULL,
+		`link` char(50) NOT NULL,
+		UNIQUE KEY (`advertiser_id`),
+		UNIQUE KEY (`name`),
+		PRIMARY KEY (`ID`)
 		);";
-	$query[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_conversions (
-		ID smallint(5) unsigned NOT NULL auto_increment,
-		order_date char(20) NOT NULL,
-		items_commision char(255) NOT NULL,
-		order_status char(8) NOT NULL,
-		advertiser_id mediumint(5) unsigned NOT NULL,		
-		PRIMARY KEY (ID)
+	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_conversions (
+		`ID` smallint(5) unsigned NOT NULL auto_increment,
+		`order_date` char(20) NOT NULL,
+		`items_commision` char(255) NOT NULL,
+		`order_status` char(8) NOT NULL,
+		`advertiser_id` mediumint(5) unsigned NOT NULL,		
+		PRIMARY KEY (`ID`)
 		);";
-        $query[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_keywords (
-                ID mediumint(9) NOT NULL auto_increment,
-                keyword varchar(255) NOT NULL default '',
-                title varchar(255) NOT NULL default '',
-                link varchar(255) NOT NULL default '',
-                openin varchar(55) NOT NULL default '',
-                tip_display enum('y','n') DEFAULT NULL,
-                tip_style varchar(55) default NULL,
-                tip_description text,
-                tip_title varchar(255) default NULL,
-                tip_image varchar(255) default NULL,
-                UNIQUE KEY id (id)
+        $query[] = "CREATE TABLE " . $wpdb->prefix . "ps_keywords (
+                `ID` mediumint(9) NOT NULL auto_increment,
+                `keyword` varchar(255) NOT NULL default '',
+                `title` varchar(255) NOT NULL default '',
+                `link` varchar(255) NOT NULL default '',
+                `openin` varchar(55) NOT NULL default '',
+                `tip_display` enum('y','n') DEFAULT NULL,
+                `tip_style` varchar(55) default NULL,
+                `tip_description` text,
+                `tip_title` varchar(255) default NULL,
+                `tip_image` varchar(255) default NULL,
+                PRIMARY KEY (`ID`)
                 );";
-	$query[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_shorted_links (
-		ID smallint(5) unsigned NOT NULL auto_increment,
-		source char(100) NOT NULL,
-		link text NOT NULL,
-		shorted char(50) NOT NULL,
-		date int(10) NOT NULL,
-		PRIMARY KEY (ID)
+	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_shorted_links (
+		`ID` smallint(5) unsigned NOT NULL auto_increment,
+		`source` char(100) NOT NULL,
+		`link` text NOT NULL,
+		`shorted` char(50) NOT NULL,
+		`date` int(10) NOT NULL,
+		PRIMARY KEY (`ID`)
 		);";
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-	dbDelta( $query );
+  dbDelta($query);
   
  // seteaza versiune curenta
  update_option('ps_installed_version', PS_VERSION);
