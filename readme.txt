@@ -2,7 +2,7 @@
 Tags: profitshare, affiliates, afiliati, conversion, conversie, link
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 1.1
+Stable tag: 2.0
 Contributors: Conversion.ro
 License: GPLv2
 
@@ -49,7 +49,7 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 5. Pagina de configurare a cuvintelor cheie
 
 == Changelog ==
-= 1.1 =
+= 2.0 =
 
 Now you can convert the links also in comments section. Keywords replacement with advanced tooltip
 
