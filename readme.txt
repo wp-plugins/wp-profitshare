@@ -5,6 +5,7 @@ Tested up to: 4.0
 Stable tag: trunk
 Contributors: Conversion.ro
 
+Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare. 
 
 == Description ==
 Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare. 
