@@ -2,7 +2,6 @@
 Tags: profitshare, affiliates, afiliati, conversion, conversie, link, keywords
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: trunk
 Contributors: Conversion.ro
 
 Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare. 
@@ -40,7 +39,8 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 == Upgrade Notice ==
 
 = 1.1 =
-Now you can convert the links also in comments section. Keywords replacement with advanced tooltip
+- Now you can convert the links also in comments section.
+- Keywords replacement with advanced tooltip
 
 
 == Screenshots == 
@@ -51,10 +51,13 @@ Now you can convert the links also in comments section. Keywords replacement wit
 4. Informatii utile, noutati din blogul Profitshare si sectiunea de intrebari si raspunsuri frecvente
 5. Pagina de configurare a cuvintelor cheie
 
-== Changelog ==
+== Changelog == 
+
 = 1.1 =
+
 Now you can convert the links also in comments section. Keywords replacement with advanced tooltip
 
 = 1.0 =
+
 Stable release for affiliates
 
