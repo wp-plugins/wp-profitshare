@@ -1,0 +1,26 @@
+.hide_display {
+    display: none;
+}
+#ps-green {
+    background-color: none;
+    background-image: url(../images/button_green.png);
+    background-repeat: none;
+    border: 0;
+    color: #FFFFFF;
+    cursor: pointer;
+    height: 30px;
+    outline: 0;
+    width: 100px;
+}
+
+#ps-red {
+    background-color: none;
+    background-image: url(../images/button_red.png);
+    background-repeat: none;
+    border: 0;
+    color: #FFFFFF;
+    cursor: pointer;
+    height: 30px;
+    outline: 0;
+    width: 100px;
+}
