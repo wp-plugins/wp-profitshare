@@ -1,8 +1,8 @@
 === WP Profitshare ===
-Tags: profitshare, affiliates, afiliati, conversion, conversie
+Tags: profitshare, affiliates, afiliati, conversion, conversie, link
 Requires at least: 3.0
-Tested up to: 3.9.1
-Stable tag: 1.0
+Tested up to: 4.0
+Stable tag: 1.1
 Contributors: Conversion.ro
 License: GPLv2
 
@@ -25,9 +25,11 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 
 == Functionality ==
 
-<strong>Pagina Setari</strong>. Pentru inceput, in pagina "setari", trebuie sa completezi campurile API user si API key cu datele specifice din contul tau Profitshare (http://profitshare.ro/affiliate/account). Dupa stabilirea conexiunii vei gasi in partea de jos a acestei pagini optiunea de a genera linkuri de afiliere Profitshare in intreaga baza de date a siteului tau. Recomandam crearea unui backup al bazei de date inainte de rularea acestei functii. 
+<strong>Pagina Setari plugin</strong>. Pentru inceput, in pagina "setari", trebuie sa completezi campurile API user si API key cu datele specifice din contul tau Profitshare (http://profitshare.ro/affiliate/account). Dupa stabilirea conexiunii vei gasi in partea de jos a acestei pagini optiunea de a genera linkuri de afiliere Profitshare in intreaga baza de date a siteului tau. Recomandam crearea unui backup al bazei de date inainte de rularea acestei functii. 
 
-<strong>Pagina Conversii</strong>. Ai posibilitatea generarii unui link Profitshare, simplu si rapid. In plus, vizualizezi ultimele 25 de conversii. 
+<strong>Pagina Setari cuvinte cheie</strong>. Ai posibilitatea de a adauga linkuri Profitshare pe cuvinte cheie din siteul tau. In plus, poti adauga o imagine reprezentativa pentru tooltip (latime 90px) avand la dispozitie doua teme de design. Simplu, usor, intuitiv. 
+
+<strong>Pagina Conversii afiliat</strong>. Ai posibilitatea generarii unui link Profitshare, simplu si rapid. In plus, vizualizezi ultimele 25 de conversii. 
 
 <strong>Istoric link</strong>. Vizualizezi istoricul generarii de linkuri in reteaua Profitshare prin intermediul pluginului WP Profitshare; atat pe cele generate manual din meniul conversii, cat si cele generate automat. 
 
@@ -44,7 +46,14 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 2. Pagina de afisare a conversiilor si castigului curent.
 3. Pagina unde sunt inregistrate toate linkurile convertite prin intermediul pluginului.
 4. Informatii utile, noutati din blogul Profitshare si sectiunea de intrebari si raspunsuri frecvente
+5. Pagina de configurare a cuvintelor cheie
+
 == Changelog ==
+= 1.1 =
+10.11.2014 
+Now you can convert the links also in comments section
+Keywords replacement with advanced tooltip
+
 = 1.0 =
-Stable release for affiliates.
+Stable release for affiliates
 
