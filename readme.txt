@@ -1,11 +1,12 @@
 === WP Profitshare ===
-Tags: profitshare, affiliates, afiliati, conversion, conversie, link, keywords
+Tags: profitshare, affiliates, afiliati, conversion, conversie
 Requires at least: 3.0
 Tested up to: 4.0
-Contributors: Conversion.ro
 Stable tag: 1.1
+Contributors: Conversion.ro
+License: GPLv2
 
-Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare. 
+Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare.
 
 == Description ==
 Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare. 
@@ -20,6 +21,7 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 3. La activare vei regasi in bara de lucru de pe blogul tau Wordpress un nou meniu numit 'Profitshare'.
 4. Completeaza setarile din meniul 'Setari Plugin' cu API User si API Key. Poti afla API User si API Key accesand contul tau Profitshare (http://profitshare.ro/affiliate/account). In cazul in care aceste detalii nu se regasesc in contul tau - trimite o cerere pentru activarea acces API la support@profitshare.ro
 5. Mult succes in promovare!
+
 
 
 == Functionality ==
@@ -37,15 +39,11 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 
 
 
+== Frequently Asked Questions == 
+
 == Upgrade Notice ==
 
-= 1.1 =
-
-- Now you can convert the links also in comments section.
-- Keywords replacement with advanced tooltip
-
-
-== Screenshots == 
+== Screenshots ==  
 
 1. Pagina de setari ale pluginului.
 2. Pagina de afisare a conversiilor si castigului curent.
@@ -53,13 +51,11 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 4. Informatii utile, noutati din blogul Profitshare si sectiunea de intrebari si raspunsuri frecvente
 5. Pagina de configurare a cuvintelor cheie
 
-== Changelog == 
+== Changelog ==
+= 1.0 =
+Stable release for affiliates.
 
 = 1.1 =
-
 Now you can convert the links also in comments section. Keywords replacement with advanced tooltip
 
-= 1.0 =
-
-Stable release for affiliates
 
