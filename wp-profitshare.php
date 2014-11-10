@@ -5,14 +5,9 @@ require_once( 'includes/functions.php' );require_once( 'includes/class-conversi
 register_activation_hook( __FILE__, 'ps_init_settings' );register_deactivation_hook( __FILE__, 'ps_remove_settings' );
 add_action( 'admin_enqueue_scripts', 'ps_enqueue_admin_assets' );add_action( 'wp_enqueue_scripts', 'ps_enqueue_assets' );add_action( 'wp_footer', 'ps_footer_js', 1);add_action( 'admin_menu', 'ps_add_menus' );add_action( 'save_post', 'ps_auto_convert_posts' );add_action( 'comment_post', 'ps_auto_convert_comments' );add_filter( 'the_content', 'ps_filter_links' );add_filter( 'comment_text', 'ps_filter_links' );
 function ps_enqueue_admin_assets(){
-    $screen = get_current_screen();
-    wp_enqueue_style('profitshare-admin-style', plugins_url('css/admin.css', __FILE__), array());
+    $screen = get_current_screen();    wp_enqueue_style('profitshare-admin-style', plugins_url('css/admin.css', __FILE__), array());
     // add assets on certain page
-    if(!empty($screen->id) && $screen->id == 'profitshare_page_ps_keywords_settings') {
-        wp_enqueue_media();
-	wp_enqueue_script('profitshare-admin-script', plugins_url('js/admin.js', __FILE__), array('jquery'));
-    }
-}
+    if(!empty($screen->id) && $screen->id == 'profitshare_page_ps_keywords_settings') {        wp_enqueue_media();	wp_enqueue_script('profitshare-admin-script', plugins_url('js/admin.js', __FILE__), array('jquery'));    }}
 function ps_enqueue_assets(){
     wp_enqueue_style('profitshare-style', plugins_url('css/public.css', __FILE__), array());
     wp_enqueue_script('profitshare-script', plugins_url('js/public.js', __FILE__), array('jquery'));
