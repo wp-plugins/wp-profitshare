@@ -1,4 +1,5 @@
 === WP Profitshare ===
+Plugin Name: WP Profitshare
 Tags: profitshare, affiliates, afiliati, conversion, conversie
 Requires at least: 3.0
 Tested up to: 4.0
