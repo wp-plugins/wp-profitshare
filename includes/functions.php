@@ -9,8 +9,8 @@ function ps_init_settings() {
 	 *	Sunt create tabelele plugin-ului și sunt configurate anumite valori
 	 */
 	global $wpdb;
-	$query = array();
-	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_advertisers (
+	$queries = array();
+	$queries[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_advertisers (
 		`ID` smallint(5) unsigned NOT NULL auto_increment,
 		`advertiser_id` mediumint(5) unsigned NOT NULL,
 		`name` char(250) NOT NULL,
@@ -19,7 +19,7 @@ function ps_init_settings() {
 		UNIQUE KEY (`name`),
 		PRIMARY KEY (`ID`)
 		);";
-	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_conversions (
+	$queries[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_conversions (
 		`ID` smallint(5) unsigned NOT NULL auto_increment,
 		`order_date` char(20) NOT NULL,
 		`items_commision` char(255) NOT NULL,
@@ -27,7 +27,7 @@ function ps_init_settings() {
 		`advertiser_id` mediumint(5) unsigned NOT NULL,		
 		PRIMARY KEY (`ID`)
 		);";
-        $query[] = "CREATE TABLE " . $wpdb->prefix . "ps_keywords (
+   $queries[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_keywords (
                 `ID` mediumint(9) NOT NULL auto_increment,
                 `keyword` varchar(255) NOT NULL default '',
                 `title` varchar(255) NOT NULL default '',
@@ -39,8 +39,8 @@ function ps_init_settings() {
                 `tip_title` varchar(255) default NULL,
                 `tip_image` varchar(255) default NULL,
                 PRIMARY KEY (`ID`)
-                );";
-	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_shorted_links (
+  );";
+	$queries[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_shorted_links (
 		`ID` smallint(5) unsigned NOT NULL auto_increment,
 		`source` char(100) NOT NULL,
 		`link` text NOT NULL,
@@ -49,7 +49,11 @@ function ps_init_settings() {
 		PRIMARY KEY (`ID`)
 		);";
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-  dbDelta($query);
+  foreach($queries as $query){
+     dbDelta($query);
+  }
+  
+  die;
   
  // seteaza versiune curenta
  update_option('ps_installed_version', PS_VERSION);
