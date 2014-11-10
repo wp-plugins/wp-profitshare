@@ -1,20 +1,9 @@
-<?php/** * Plugin Name: WP Profitshare * Plugin URI: http://www.profitshare.ro * Description: Plugin-ul converteste toate link-urile directe catre advertiseri existenti in Profitshare in link-uri care au paramentru de tracking pentru inregistrarea conversiilor aferente promovarii acestora.  * Version: 1.1 * Author: Conversion * Author URI: http://www.conversion.ro * License: GPL2 */
+<?php/** * Plugin Name: WP Profitshare * Plugin URI: http://www.profitshare.ro * Description: Plugin-ul converteste toate link-urile directe catre advertiseri existenti in Profitshare in link-uri care au paramentru de tracking pentru inregistrarea conversiilor aferente promovarii acestora.  * Version: 1.1.0 * Author: Conversion * Author URI: http://www.conversion.ro * License: GPL2 */
 defined( 'ABSPATH' ) || exit;
 define( 'PS_URL', 'http://api.profitshare.ro' );
-require_once( 'includes/functions.php' );
-require_once( 'includes/class-conversions.php' );
-require_once( 'includes/class-history-links.php' );
-require_once( 'includes/class-keywords-list.php' );
-register_activation_hook( __FILE__, 'ps_init_settings' );
-register_deactivation_hook( __FILE__, 'ps_remove_settings' );
-add_action( 'admin_enqueue_scripts', 'ps_enqueue_admin_assets' );
-add_action( 'wp_enqueue_scripts', 'ps_enqueue_assets' );
-add_action( 'wp_footer', 'ps_footer_js', 1);
-add_action( 'admin_menu', 'ps_add_menus' );
-add_action( 'save_post', 'ps_auto_convert_posts' );
-add_action( 'comment_post', 'ps_auto_convert_comments' );
-add_filter( 'the_content', 'ps_filter_links' );
-add_filter( 'comment_text', 'ps_filter_links' );
+require_once( 'includes/functions.php' );require_once( 'includes/class-conversions.php' );require_once( 'includes/class-history-links.php' );require_once( 'includes/class-keywords-list.php' );
+register_activation_hook( __FILE__, 'ps_init_settings' );register_deactivation_hook( __FILE__, 'ps_remove_settings' );
+add_action( 'admin_enqueue_scripts', 'ps_enqueue_admin_assets' );add_action( 'wp_enqueue_scripts', 'ps_enqueue_assets' );add_action( 'wp_footer', 'ps_footer_js', 1);add_action( 'admin_menu', 'ps_add_menus' );add_action( 'save_post', 'ps_auto_convert_posts' );add_action( 'comment_post', 'ps_auto_convert_comments' );add_filter( 'the_content', 'ps_filter_links' );add_filter( 'comment_text', 'ps_filter_links' );
 function ps_enqueue_admin_assets(){
     $screen = get_current_screen();
     wp_enqueue_style('profitshare-admin-style', plugins_url('css/admin.css', __FILE__), array());
