@@ -10,7 +10,7 @@ function ps_init_settings() {
 	 */
 	global $wpdb;
 	$query = array();
-	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_advertisers (
+	$query[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_advertisers (
 		ID smallint(5) unsigned NOT NULL auto_increment,
 		advertiser_id mediumint(5) unsigned NOT NULL,
 		name char(250) NOT NULL,
@@ -19,7 +19,7 @@ function ps_init_settings() {
 		UNIQUE KEY (name),
 		PRIMARY KEY (ID)
 		);";
-	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_conversions (
+	$query[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_conversions (
 		ID smallint(5) unsigned NOT NULL auto_increment,
 		order_date char(20) NOT NULL,
 		items_commision char(255) NOT NULL,
@@ -27,7 +27,7 @@ function ps_init_settings() {
 		advertiser_id mediumint(5) unsigned NOT NULL,		
 		PRIMARY KEY (ID)
 		);";
-        $query[] = "CREATE TABLE " . $wpdb->prefix . "ps_keywords (
+        $query[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_keywords (
                 ID mediumint(9) NOT NULL auto_increment,
                 keyword varchar(255) NOT NULL default '',
                 title varchar(255) NOT NULL default '',
@@ -40,7 +40,7 @@ function ps_init_settings() {
                 tip_image varchar(255) default NULL,
                 UNIQUE KEY id (id)
                 );";
-	$query[] = "CREATE TABLE " . $wpdb->prefix . "ps_shorted_links (
+	$query[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_shorted_links (
 		ID smallint(5) unsigned NOT NULL auto_increment,
 		source char(100) NOT NULL,
 		link text NOT NULL,
@@ -50,6 +50,9 @@ function ps_init_settings() {
 		);";
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $query );
+  
+ // seteaza versiune curenta
+ update_option('ps_installed_version', PS_VERSION);
 }
 
 function ps_remove_settings() {

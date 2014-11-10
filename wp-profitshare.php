@@ -12,6 +12,7 @@
 defined( 'ABSPATH' ) || exit;
 
 define( 'PS_URL', 'http://api.profitshare.ro' );
+define( 'PS_VERSION', '1.1' );
 
 
 require_once( 'includes/functions.php' );
@@ -19,11 +20,10 @@ require_once( 'includes/class-conversions.php' );
 require_once( 'includes/class-history-links.php' );
 require_once( 'includes/class-keywords-list.php' );
 
-
 register_activation_hook( __FILE__, 'ps_init_settings' );
 register_deactivation_hook( __FILE__, 'ps_remove_settings' );
 
-
+add_action('admin_init', 'ps_check_update');
 add_action( 'admin_enqueue_scripts', 'ps_enqueue_admin_assets' );
 add_action( 'wp_enqueue_scripts', 'ps_enqueue_assets' );
 add_action( 'wp_footer', 'ps_footer_js', 1);
@@ -33,6 +33,13 @@ add_action( 'comment_post', 'ps_auto_convert_comments' );
 add_filter( 'the_content', 'ps_filter_links' );
 add_filter( 'comment_text', 'ps_filter_links' );
 
+function ps_check_update(){
+  $version = get_option('ps_installed_version', '0');
+
+  if (!version_compare($version, PS_VERSION, '=')) {
+    ps_init_settings();
+  }
+}
 
 function ps_enqueue_admin_assets(){
 
