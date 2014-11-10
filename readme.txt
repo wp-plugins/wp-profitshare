@@ -39,7 +39,7 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 
 == Upgrade Notice ==
 
-= 2.0 =
+= 1.1 =
 Now you can convert the links also in comments section. Keywords replacement with advanced tooltip
 
 
@@ -52,8 +52,7 @@ Now you can convert the links also in comments section. Keywords replacement wit
 5. Pagina de configurare a cuvintelor cheie
 
 == Changelog ==
-= 2.0 =
-
+= 1.1 =
 Now you can convert the links also in comments section. Keywords replacement with advanced tooltip
 
 = 1.0 =

@@ -1,4 +1,4 @@
-<?php/** * Plugin Name: WP Profitshare * Plugin URI: http://www.profitshare.ro * Description: Plugin-ul convertește toate link-urile directe către advertiserii existenți în Profitshare în link-uri care au paramentru de tracking pentru înregistrarea conversiilor aferente promovării acestora. * Version: 2.0 * Author: Conversion * Author URI: http://www.conversion.ro * License: GPL2 */
+<?php/** * Plugin Name: WP Profitshare * Plugin URI: http://www.profitshare.ro * Description: Plugin-ul convertește toate link-urile directe către advertiserii existenți în Profitshare în link-uri care au paramentru de tracking pentru înregistrarea conversiilor aferente promovării acestora. * Version: 1.1 * Author: Conversion * Author URI: http://www.conversion.ro * License: GPL2 */
 defined( 'ABSPATH' ) || exit;
 define( 'PS_URL', 'http://api.profitshare.ro' );
 require_once( 'includes/functions.php' );
