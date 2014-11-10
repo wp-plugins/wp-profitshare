@@ -2,8 +2,8 @@
 Tags: profitshare, affiliates, afiliati, conversion, conversie, link, keywords
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 1.1
 Contributors: Conversion.ro
+Stable tag: 1.1
 
 Transforma link-urile tale directe in link-uri de afiliere pentru a castiga comisioane prin Profitshare. 
 
