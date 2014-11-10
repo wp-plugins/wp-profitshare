@@ -53,8 +53,6 @@ function ps_init_settings() {
      dbDelta($query);
   }
   
-  die;
-  
  // seteaza versiune curenta
  update_option('ps_installed_version', PS_VERSION);
 }
