@@ -1,11 +1,15 @@
 <?php
+
 /*	History Links
- *	@ package: profitshare-for-affiliates
- *	@ since: 1.0.0
+ *	@ package: wp-profitshare
+ *	@ since: 1.0
  *	Clasă pentru generarea tabelului cu ultimele linkuri scurtate
  */
+
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WP_List_Table' ) ) require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+
+
 
 class History_Links extends WP_List_Table {
 	function column_default( $item, $column_name ) {
@@ -17,7 +21,7 @@ class History_Links extends WP_List_Table {
             case 'shorted':
 				return '<a href="' . $item['shorted'] . '" target="_blank"">' . $item['shorted'] . '</a>';
 			case 'date':
-				return date( 'd', $item['date'] ) . ' ' . translate_month( date( 'n', $item['date'] ) ) . date( ' Y, H:i', $item['date'] );
+				return date( 'd', $item['date'] ) . ' ' . ps_translate_month( date( 'n', $item['date'] ) ) . date( ' Y, H:i', $item['date'] );
 			default:
 				return print_r( $item );
 		}
@@ -46,20 +50,20 @@ class History_Links extends WP_List_Table {
 
 	function get_columns() {
 		$columns = array(
-			'source'	=> 'Sursă',
-			'link'		=> 'Link advertiser',
-			'shorted'	=> 'Link generat profitshare',
-			'date'		=> 'Data',
+			'source'	=>	'Sursă',
+			'link'		=>	'Link advertiser',
+			'shorted'	=>	'Link profitshare',
+			'date'		=>	'Data',
 		);
 		return $columns;
 	}
 
 	function get_sortable_columns() {
 		$sortable_columns = array(
-			'source'	=> array( 'source', true ),
-			'link'		=> array( 'link', true ),
-			'shorted'	=> array( 'shorted', true ),
-			'date'		=> array( 'date', true ),
+			'source'	=>	array( 'source', true ),
+			'link'		=>	array( 'link', true ),
+			'shorted'	=>	array( 'shorted', true ),
+			'date'		=>	array( 'date', true ),
 		);
 		return $sortable_columns;
 	}
@@ -79,15 +83,19 @@ class History_Links extends WP_List_Table {
 		$sortable = $this->get_sortable_columns();
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 		$this->process_bulk_action();
+
 		// Se obţin informaţiile din baza de date, pentru listare
+
 		$query = "SELECT * FROM " . $wpdb->prefix . "ps_shorted_links";
 		$data = $wpdb->get_results( $query, ARRAY_A );
+
 		function usort_reorder( $a, $b ) {
 			$orderby = ( ! empty( $_REQUEST['orderby'] ) ) ? $_REQUEST['orderby'] : 'date';
 			$order = ( ! empty( $_REQUEST['order'] ) ) ? $_REQUEST['order'] : 'desc';
 			$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
 			return ( 'asc' === $order ) ? $result : -$result;
 		}
+
 		usort( $data, 'usort_reorder' );
 		$current_page = $this->get_pagenum();
 		$total_items = count( $data );
