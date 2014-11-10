@@ -40,6 +40,7 @@ Profitshare este reteaua de marketing afiliat cu cele mai mari vanzari din Roman
 == Upgrade Notice ==
 
 = 1.1 =
+
 - Now you can convert the links also in comments section.
 - Keywords replacement with advanced tooltip
 
