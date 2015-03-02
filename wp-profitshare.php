@@ -3,6 +3,7 @@
  * Plugin Name: WP Profitshare
  * Plugin URI: http://www.profitshare.ro
  * Description: Converts all your direct links into affiliate links in order for you to earn commissions through Profitshare.
+ * Version: 1.2
  * Author: Conversion
  * Author URI: http://www.conversion.ro
  * License: GPL2
