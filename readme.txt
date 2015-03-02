@@ -38,11 +38,6 @@ Profitshare is the affiliate marketing network with the highest sales in Romania
 <strong>Help</strong>. Find out useful information and answers for Frequently Asked Questions 
 
 
-
-== Frequently Asked Questions == 
-
-== Upgrade Notice ==
-
 == Screenshots ==  
 
 1. The plugin settings page.
@@ -60,4 +55,4 @@ Stable release for affiliates.
 Now you can also convert the links from your comments section. Keywords replacement with advanced tooltip.
 
 = 1.2 =
-WP Profitshare for Bulgaria release. Small bug fixing.
+WP Profitshare for Bulgaria release. Small bug fixing. 
