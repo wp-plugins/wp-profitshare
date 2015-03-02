@@ -9,7 +9,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
-define( 'PS_VERSION', '1.1' );
+define( 'PS_VERSION', '1.2' );
 
 require_once( 'includes/functions.php' );
 require_once( 'includes/class-conversions.php' );
