@@ -1,6 +1,6 @@
 === WP Profitshare ===
 Plugin Name: WP Profitshare
-Tags: profitshare, affiliates, afiliati, conversion, conversie
+Tags: profitshare, affiliates, afiliati, conversion, conversie, marketing afiliat
 Requires at least: 3.0
 Tested up to: 4.1.1
 Stable tag: 1.2
