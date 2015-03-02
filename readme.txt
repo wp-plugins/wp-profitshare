@@ -2,7 +2,7 @@
 Plugin Name: WP Profitshare
 Tags: profitshare, affiliates, afiliati, conversion, conversie
 Requires at least: 3.0
-Tested up to: 4.4.1
+Tested up to: 4.1.1
 Stable tag: 1.2
 Contributors: Conversion.ro
 License: GPLv2
@@ -48,8 +48,9 @@ Profitshare is the affiliate marketing network with the highest sales in Romania
 1. The plugin settings page.
 2. The conversions and current earnings page.
 3. The page where all the plugin converted links are listed.
-4. Useful information, news from the Profitshare blog and FAQ.
+4. Useful information: Frequently Asked Questions.
 5. The keyword configuration page.
+6. Light theme for keyword replacement preview.
 
 == Changelog ==
 = 1.0 =
