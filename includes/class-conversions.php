@@ -1,11 +1,9 @@
 <?php
-
 /*	Conversions
  *	@ package: wp-profitshare
  *	@ since: 1.0
  *	Clasă pentru generarea tabelului cu ultimele conversii
  */
-
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WP_List_Table' ) ) require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 
@@ -17,9 +15,9 @@ class Conversions extends WP_List_Table {
 				return date( 'd', $strtotime ) . ' ' . ps_translate_month( date( 'n', $strtotime ) ) . date( ' Y, H:i', $strtotime );
 			case 'items_commision':
 				$conversions = explode("|", $item['items_commision']);
-				return number_format(array_sum($conversions), 2) . " RON";
+				return number_format(array_sum($conversions), 2) . ' ' . config( 'CURRENCY' );
             case 'order_status':
-				return ( 'approved' == $item['order_status'] )?'Aprobată':(( 'pending' == $item['order_status'] )?'În aşteptare':'Anulată');
+				return ( 'approved' == $item['order_status'] )?'Approved':(( 'pending' == $item['order_status'] )?'Pending':'Canceled');
 			case 'advertiser_id':
 				global $wpdb;
 				$advertiser_name = $wpdb->get_results( "SELECT name FROM " . $wpdb->prefix . "ps_advertisers WHERE advertiser_id='" . $item['advertiser_id'] . "'", OBJECT );
@@ -52,8 +50,8 @@ class Conversions extends WP_List_Table {
 
 	function get_columns() {
 		$columns = array(
-			'order_date'		=>	'Data şi ora',
-			'items_commision'	=>	'Valoare',
+			'order_date'		=>	'Date, Hour',
+			'items_commision'	=>	'Commission value',
 			'order_status'		=>	'Status',
 			'advertiser_id'		=>	'Advertiser',
 		);

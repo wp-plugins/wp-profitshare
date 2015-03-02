@@ -2,18 +2,14 @@
 /**
  * Plugin Name: WP Profitshare
  * Plugin URI: http://www.profitshare.ro
- * Description: Plugin-ul converteste toate link-urile directe catre advertiseri existenti in Profitshare in link-uri care au paramentru de tracking pentru inregistrarea conversiilor aferente promovarii acestora. 
- * Version: 1.1
+ * Description: Converts all your direct links into affiliate links in order for you to earn commissions through Profitshare.
  * Author: Conversion
  * Author URI: http://www.conversion.ro
  * License: GPL2
  */
 
 defined( 'ABSPATH' ) || exit;
-
-define( 'PS_URL', 'http://api.profitshare.ro' );
 define( 'PS_VERSION', '1.1' );
-
 
 require_once( 'includes/functions.php' );
 require_once( 'includes/class-conversions.php' );
@@ -33,74 +29,51 @@ add_action( 'comment_post', 'ps_auto_convert_comments' );
 add_filter( 'the_content', 'ps_filter_links' );
 add_filter( 'comment_text', 'ps_filter_links' );
 
-function ps_check_update(){
-  $version = get_option('ps_installed_version', '0');
-
-  if (!version_compare($version, PS_VERSION, '=')) {
-    ps_init_settings();
-  }
+function ps_check_update() {
+	$version = get_option('ps_installed_version', '0');
+	if (!version_compare($version, PS_VERSION, '=')) {
+		ps_init_settings();
+	}
 }
 
-function ps_enqueue_admin_assets(){
-
+function ps_enqueue_admin_assets() {
     $screen = get_current_screen();
     wp_enqueue_style('profitshare-admin-style', plugins_url('css/admin.css', __FILE__), array());
 
     // add assets on certain page
-
     if(!empty($screen->id) && $screen->id == 'profitshare_page_ps_keywords_settings') {
-        wp_enqueue_media();
-	wp_enqueue_script('profitshare-admin-script', plugins_url('js/admin.js', __FILE__), array('jquery'));
+		wp_enqueue_media();
+		wp_enqueue_script('profitshare-admin-script', plugins_url('js/admin.js', __FILE__), array('jquery'));
     }
 }
 
-function ps_enqueue_assets(){
-
+function ps_enqueue_assets() {
     wp_enqueue_style('profitshare-style', plugins_url('css/public.css', __FILE__), array());
-
     wp_enqueue_script('profitshare-script', plugins_url('js/public.js', __FILE__), array('jquery'));
-
 }
 
-function ps_footer_js(){
-
+function ps_footer_js() {
     global $wpdb;
-
     $table_name = $wpdb->prefix . "ps_keywords";
-
     $links = $wpdb->get_results("SELECT * FROM $table_name");
-
     if(!empty($links)) {
-
     ?>
-
         <script type='text/javascript'>
-
         jQuery().ready(function(e) {
-
         <?php 
-
         foreach($links as $link) {
-
             $openin = $link->openin == 'new' ? '_blank' : '_self';
-
-
-
             if($link->tip_display=='y') {
-                $newText = $link->tip_style=='light' ? "<a class='pslinks ttlight'" : "<a class='pslinks ttdark'";
-
+				$newText = $link->tip_style=='light' ? "<a class='pslinks ttlight'" : "<a class='pslinks ttdark'";
                 $newText .= " href='".$link->link."' target='".$openin."'>".$link->keyword."<span><div class='ttfirst'></div><strong>".$link->tip_title."</strong><br />";
-
                 if($link->tip_image!='') {
                     $newText .= "<img alt='CSS tooltip image' style='float:right; width:90px; margin:0 0 10px 10px;' src='".$link->tip_image."'>";
                 }
-                $newText .= $link->tip_description."<div class='ttlast'>WP Profitshare 1.1</div></span></a>";
+                $newText .= $link->tip_description."<div class='ttlast'>WP Profitshare 1.2</div></span></a>";
             } else {
                 $newText = "<a class='pslinks' href='".$link->link."' title='".$link->title."' target='".$openin."'>".$link->keyword."</a>";
             }
-
             ?>
-
             jQuery('p').each(function() {
                 //  var strNewString = jQuery(this).html().replace(/(?!<a[^>]*>)(<?php echo $link->keyword; ?>)(?![^<]*<\/a>)/g,"<?php echo $newText; ?>");
                     var strNewString = jQuery(this).html().replace(/(<?php echo $link->keyword; ?>)(?![^<]*>|[^<>]*<\/)/gm,"<?php echo $newText; ?>");
@@ -113,40 +86,33 @@ function ps_footer_js(){
 }
 
 function ps_add_menus() {
-
 	/**
 	 *	@since: 1.0
-	 *	Creează meniul Profitshare în Dashboard
-	 *	cu submeniurile: Setări plugin, Conversii, Generare în articole, Istoric linkuri
+	 *	Creating Profitshare menu in Dashboard
+	 *	With: Plugin Settings, Keyword Settings, Conversions, Link history, Istoric linkuri, Help
 	 */
-
 	add_menu_page( 'Profitshare', 'Profitshare', 'edit_others_posts', 'ps_account_settings', 'ps_account_settings', 'dashicons-chart-pie', 21 );
-	add_submenu_page( 'ps_account_settings', 'Setări plugin', 'Setări plugin', 'manage_options', 'ps_account_settings', 'ps_account_settings' );
-
+	add_submenu_page( 'ps_account_settings', 'Plugin Settings', 'Plugin Settings', 'manage_options', 'ps_account_settings', 'ps_account_settings' );
 	$current_user = wp_get_current_user();
-
 	if ( get_user_meta( $current_user->ID, 'ps_is_api_connected', true ) ) {
-		add_submenu_page( 'ps_account_settings', 'Setări cuvinte cheie', 'Setări cuvinte cheie', 'manage_options', 'ps_keywords_settings', 'ps_keywords_settings' );
-		add_submenu_page( 'ps_account_settings', 'Conversii afiliat', 'Conversii afiliat', 'manage_options', 'ps_conversions', 'ps_conversions' );
-		add_submenu_page( 'ps_account_settings', 'Istoric linkuri', 'Istoric linkuri', 'manage_options', 'ps_history_links', 'ps_history_links' );
-		add_submenu_page( 'ps_account_settings', 'Informații utile', 'Informații utile', 'manage_options', 'ps_useful_info', 'ps_useful_info' );
+		add_submenu_page( 'ps_account_settings', 'Keyword Settings', 'Keyword Settings', 'manage_options', 'ps_keywords_settings', 'ps_keywords_settings' );
+		add_submenu_page( 'ps_account_settings', 'Conversions', 'Conversions', 'manage_options', 'ps_conversions', 'ps_conversions' );
+		add_submenu_page( 'ps_account_settings', 'Link history', 'Link history', 'manage_options', 'ps_history_links', 'ps_history_links' );
+		add_submenu_page( 'ps_account_settings', 'Help', 'Help', 'manage_options', 'ps_useful_info', 'ps_useful_info' );
 	}
 }
 
 function ps_account_settings() {
-
-
 	/**
 	 *	@since: 1.0
-	 *	Pagina Setări API
-	 *	Se setează datele de conectare la API şi se efectuează conectarea
+	 *	API Settings Page
+	 *	Setting API connexion
 	 */
-
 	$current_user = wp_get_current_user();
-
 	if ( isset( $_POST['disconnect'] ) ) {
 		delete_user_meta( $current_user->ID, 'ps_api_user' ); 
 		delete_user_meta( $current_user->ID, 'ps_api_key' );
+		delete_user_meta( $current_user->ID, 'ps_api_country' );
 		delete_user_meta( $current_user->ID, 'ps_is_api_connected' );
 		delete_option( 'ps_last_advertisers_update' );
 		delete_option( 'ps_last_conversions_update' );
@@ -154,56 +120,46 @@ function ps_account_settings() {
 		delete_option( 'ps_last_check_account_balance' );
 		delete_option( 'auto_convert_posts' );
 		delete_option( 'auto_convert_comments' );
-
+		global $wpdb;
+		$wpdb->query( 'TRUNCATE TABLE ' . $wpdb->prefix . 'ps_advertisers' );
+		$wpdb->query( 'TRUNCATE TABLE ' . $wpdb->prefix . 'ps_conversions' );
 	} else if ( isset( $_POST['connect'] ) ) {
-
 		$api_user	=	esc_sql( $_POST['api_user'] );
 		$api_key	=	esc_sql( $_POST['api_key'] );
-
-		if ( ps_connection_check( $api_user, $api_key ) ) {
-
-
+		$api_country=	esc_sql( $_POST['api_country'] );
+		if ( ps_connection_check( $api_user, $api_key, $api_country ) ) {
 			/**
-			 *	Se face cache la interval de:
-			 *	24 de ore pentru advertiseri
-			 *	6 ore pentru conversii
+			 *	Caching every:
+			 *	24 h for advetisers
+			 *	6 h for conversions
 			 */
-
 			ps_update_advertisers_db();
 			ps_update_conversions();
-
-
 			echo '<meta http-equiv="refresh" content="0; url='. admin_url( 'admin.php?page=ps_account_settings&ps_status=true' ) .'">';
 		} else {
-			 echo '<meta http-equiv="refresh" content="0; url='. admin_url( 'admin.php?page=ps_account_settings&ps_status=false' ) .'">';
+			echo '<meta http-equiv="refresh" content="0; url='. admin_url( 'admin.php?page=ps_account_settings&ps_status=false' ) .'">';
 		}
 	}
-
-
 	$ps_api_user 		= get_user_meta( $current_user->ID, 'ps_api_user', true );
 	$ps_api_key 		= get_user_meta( $current_user->ID, 'ps_api_key', true );
+	$ps_api_country		= get_user_meta( $current_user->ID, 'ps_api_country', true );
 	$is_api_connected	= get_user_meta( $current_user->ID, 'ps_is_api_connected', true );	
-
-
 	if ( $is_api_connected ) {
-		$button = '<input type="submit" name="disconnect" id="ps-red" value="Deconectare" />';
+		$button = '<input type="submit" name="disconnect" id="ps-red" value="Disconnect" />';
 		$disabled = 'disabled="disabled"';
+		$country = get_user_meta( $current_user->ID, 'ps_api_country', true );
 	} else {
-		$button = '<input type="submit" name="connect" id="ps-green" value="Conectare" />';
+		$button = '<input type="submit" name="connect" id="ps-green" value="Connect" />';
 		$disabled = '';
 	}
-
-
 	if ( $is_api_connected ) {
-		echo '<div id="message" class="updated"><p>Conectat: Datele API sunt corecte, iar conexiunea este realizată cu succes.</p></div>';
+		echo '<div id="message" class="updated"><p>Connected: API data is correct and the connection has been successful established.</p></div>';
 	} else if( ! $is_api_connected ) {
-		echo '<div id="message" class="error"><p>Deconectat: Datele API sunt incorecte sau au apărut erori de conectare.</p></div>';
+		echo '<div id="message" class="error"><p>Disconnected: API data is incorrect or connection error occurred.</p></div>';
 	}
 	?>
-
-
 	<div class="wrap">
-		<a href="http://profitshare.ro"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
+		<a href="<?php echo config( 'PS_HOME' ); ?>" target="_blank"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
 		<hr style="border-top: 1px dashed #7f8c8d;">
 		<form method="post" action="">
 			<table class="form-table">
@@ -216,28 +172,39 @@ function ps_account_settings() {
 					<td><input id="api_key" class="regular-text" type="text" name="api_key" value="<?php echo $ps_api_key . '"'; echo $disabled; ?> /></td>
 				</tr>
 				<tr>
+					<th><label for="api_country">Country</label></th>
+					<td><select id="api_country" name="api_country" <?php echo $disabled; ?>>
+						<?php
+						global $ps_api_config;
+						foreach ( $ps_api_config AS $code => $array ) {
+							if ( config( 'NAME' ) == $array['NAME'] ) {
+								echo '<option value="' . $code . '" selected="selected">' . $array['NAME'] . '</option>';
+							} else {
+								echo '<option value="' . $code . '">' . $array['NAME'] . '</option>';
+							}
+						}
+						?>
+						</select>
+						</td>
+				</tr>
+				<tr>
 					<th><?php echo $button; ?></th>
 				</tr>
 			</table>
 		</form>
-
-
 		<?php
-
 		if ( $is_api_connected ) {
 			if ( isset( $_POST['generate_in_posts'] ) ) {
 				$param = 'posts';
-				$where = 'articolele';
+				$where = 'posts';
 			} else {
 				$param = 'comments';
-				$where = 'comentariile';
+				$where = 'comments';
 			}
 			if ( isset( $_POST['generate_in_posts'] ) || isset( $_POST['generate_in_comments'] ) ) {
 				$shorted_links = ps_replace_links( $param );
 		?>
-
-				<div id="message" class="updated"><p>Au fost scurtate şi convertite <?php echo $shorted_links; ?> linkuri în <strong>toate <?php echo $where; ?></strong> (<a href="<?php echo admin_url( 'admin.php?page=ps_history_links' ); ?>">Vezi lista</a>).</div>
-
+				<div id="message" class="updated"><p>Have been shortened and converted <?php echo $shorted_links; ?> links in <strong>all <?php echo $where; ?></strong> (<a href="<?php echo admin_url( 'admin.php?page=ps_history_links' ); ?>">See list</a>).</div>
 		<?php
 			}
 			$auto_convert_posts	= get_option( 'auto_convert_posts' );
@@ -256,126 +223,113 @@ function ps_account_settings() {
 			if ( $auto_convert_posts )
 				$form_post = array(
 					'css_id'		=>	'ps-red',
-					'input_value'	=>	'Dezactivează!',
+					'input_value'	=>	'Disable!',
 				);
 			else
 				$form_post = array(
 					'css_id'		=>	'ps-green',
-					'input_value'	=>	'Activează!',
+					'input_value'	=>	'Enable!',
 				);
 
 			if ( $auto_convert_comm )
 				$form_comment = array(
 					'css_id'		=>	'ps-red',
-					'input_value'	=>	'Dezactivează!',
+					'input_value'	=>	'Disable!',
 				);
 			else
 				$form_comment = array(
 					'css_id'		=>	'ps-green',
-					'input_value'	=>	'Activează!',
+					'input_value'	=>	'Enable!',
 				);
 		?>
-
-			<h3>Link-uri profitshare în articole *</h3>
+			<h3>Profitshare links in posts *</h3>
 			<form action="" method="post" style="display: inline;">
-				<input type="submit" name="generate_in_posts" id="ps-green" value="Generează!" />
+				<input type="submit" name="generate_in_posts" id="ps-green" value="Generate!" />
 			</form>
 			<form action="" method="post" style="display: inline;">
 				<input type="submit" name="links_in_posts" id="<?php echo $form_post['css_id']; ?>" value="<?php echo $form_post['input_value']; ?>" />
 			</form>
-			
-
-			<h3>Link-uri profitshare în comentarii *</h3>
+			<h3>Profitshare links in comments *</h3>
 			<form action="" method="post" style="display: inline;">
-				<input type="submit" name="generate_in_comments" id="ps-green" value="Generează!" />
+				<input type="submit" name="generate_in_comments" id="ps-green" value="Generate!" />
 			</form>
 			<form action="" method="post" style="display: inline;">
 				<input type="submit" name="links_in_comments" id="<?php echo $form_comment['css_id']; ?>" value="<?php echo $form_comment['input_value']; ?>" />
 			</form><br/><br/>			
-
-			<span class="description">* Prin click pe "Generează!", în toate articolele/comentariile existente până în acest moment pe blog, toate link-urile din reţeaua Profitshare vor fi înlocuit cu un link, de forma http://profitshare.ro/l/123456.<br/>
-			Prin click pe "Activează!", în toate articolele/comentariile ce vor fi postate de acum înainte, link-urile din rețeaua Profitshare vor fi înlocuite automat ca mai sus.<br/>
-			<strong>Pentru a evita eventualele neplăceri, vă recomandăm să faceţi un back-up la baza de date înainte de a rula această acţiune.</strong></span>
+			<span class="description">* By clicking on "Generate!" all your direct links from all your posts/ comments published so far will be converted into affiliate links of this form  <?php echo config( 'PS_HOME' ); ?>/l/123456.<br/>
+			By clicking on "Activate!" all the links from your future posts/ comments will be automatically converted into Profitshare affiliate links.<br/>
+			<strong>We recommend making a backup of you database before running this functionality.</strong></span>
 			<?php
 		}
 		?>
 	</div>
-
 	<?php
 }
 
 function ps_keywords_settings() {
-
     global $wpdb;
-
 	/**
 	 *	@since: 1.1
-	 *	Pagina Setări cuvinte cheie
+	 *	Keyword settings
 	 */
 	 ?>
-
 	<div class="wrap">
-		<a href="http://profitshare.ro"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
+		<a href="<?php echo config( 'PS_HOME' ); ?>"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
 		<hr style="border-top: 1px dashed #7f8c8d;">
-		<h2>
-                    Setări cuvinte cheie 
-                    <a href="<?php echo admin_url('admin.php?page=ps_keywords_settings&do=add'); ?>" style="background: #FFF; font-size: 12px; padding: 4px; text-decoration: none; border-radius: 3px;">Adauga cuvant cheie</a>
-                    <?php if(!empty($_REQUEST['do']) && $_REQUEST['do'] != 'delete') { ?><a href="<?php echo admin_url('admin.php?page=ps_keywords_settings'); ?>" style="background: #FFF; font-size: 12px; padding: 4px; text-decoration: none; border-radius: 3px;">Afiseaza lista cuvinte cheie</a><?php } ?>
-                </h2>
+		<h2>Keyword Settings 
+		<a href="<?php echo admin_url('admin.php?page=ps_keywords_settings&do=add'); ?>" style="background: #FFF; font-size: 12px; padding: 4px; text-decoration: none; border-radius: 3px;">Add keyword</a>
+		<?php if(!empty($_REQUEST['do']) && $_REQUEST['do'] != 'delete') { ?><a href="<?php echo admin_url('admin.php?page=ps_keywords_settings'); ?>" style="background: #FFF; font-size: 12px; padding: 4px; text-decoration: none; border-radius: 3px;">Show keywords list</a><?php } ?>
+		</h2>
 		<?php
                 $show_table = true;
                 $errors = array();
                 $success = array();
-               
-
                 // ACTIONS
-
-                if(!empty($_REQUEST['do'])) {
+				if(!empty($_REQUEST['do'])) {
                     $table_name = $wpdb->prefix.'ps_keywords';                 
-
                     switch($_REQUEST['do']) {
                         case 'delete':
                             if(!empty($_REQUEST['keyword_id'])) {
                                 $do_query = $wpdb->delete( $table_name, array( 'ID' => $_REQUEST['keyword_id'] ), array( '%d' ) );                               
-
                                 if($do_query){
-                                    $success[] = 'Cuvantul cheie a fost sters.';
+                                    $success[] = 'Keyword deleted.';
                                 }else{
-                                    $errors[] = 'Cuvantul cheie nu a putut fi sters.';
+                                    $errors[] = 'Keyword delete error.';
                                 }
                             }
                             break;                        
 						case 'edit':
                             if(!empty($_REQUEST['keyword_id']) && !empty($_POST)) {
                                     if($_POST['keyword']=="") {
-                                            $errors[] = "<strong>Cuvantul cheie</strong> este obligatoriu.";
+                                            $errors[] = "<strong>Keyword</strong> required.";
                                     }
                                     if($_POST['title']=="") {
-                                            $errors[] = "<strong>Titlul</strong> este obligatoriu.";
+                                            $errors[] = "<strong>Title</strong> required.";
                                     }
                                     if($_POST['link']=="") {
-                                            $errors[] = "<strong>Link-ul</strong> este obligatoriu.";
+                                            $errors[] = "<strong>Link </strong> required.";
                                     }
-                                    if($_POST['link'] != "" && !preg_match('#^https?://profitshare\.ro/l/#i', $_POST['link'])){
-                                            $errors[] = "<strong>Link-ul</strong> trebuie sa inceapa cu profitshare.ro/l/";
+                                    if($_POST['link'] != "" && !preg_match('#^https?://profitshare\.ro/l/#i', $_POST['link']) && config( 'PS_HOME' ) == 'http://profitshare.ro'){
+                                            $errors[] = "<strong>Your link</strong> must start with " . config( 'PS_HOME' ) . "/l/";
+                                    }
+									if($_POST['link'] != "" && !preg_match('#^https?://profitshare\.bg/l/#i', $_POST['link']) && config( 'PS_HOME' ) == 'http://profitshare.bg'){
+                                            $errors[] = "<strong>Your link</strong> must start with " . config( 'PS_HOME' ) . "/l/";
                                     }
                                     if($_POST['openin']=="") {
-                                            $errors[] = "<strong>Deschide link in...</strong> este obligatoriu.";
+                                            $errors[] = "<strong>Open link in...</strong> required.";
                                     }
                                     if($_POST['tip_display']=="1") {
                                             if($_POST['tip_title']=="") {
-                                                    $errors[] = "<strong>Titlu tooltip</strong> este obligatoriu.";
+                                                    $errors[] = "<strong>Tooltip title</strong> required.";
                                             }
                                             if($_POST['tip_description']=="") {
-                                                    $errors[] = "<strong>Descriere tooltip</strong> este obligatoriu.";
+                                                    $errors[] = "<strong>Tooltip description</strong> required.";
                                             }
                                     }
-
                                     if(empty($errors)) {
                                             if( !preg_match('#^https?://#', $_POST['link'])) {
                                                 $_POST['link'] = 'https://' . $_POST['link'];
                                             }
-
                                             $wpdb->update( 
                                                     $table_name, 
                                                     array( 
@@ -389,7 +343,6 @@ function ps_keywords_settings() {
                                                         'tip_description' => $_POST['tip_description'],
                                                         'tip_image' => $_POST['tip_image']
                                                     ), 
-
                                                     array( 'ID' => $_POST['ID'] ),
                                                     array( 
                                                         '%s', 
@@ -402,13 +355,11 @@ function ps_keywords_settings() {
                                                         '%s',
                                                         '%s'
                                                     ),
-
                                                     array(
                                                         '%d'
                                                     )
                                             );
-
-                                            $success[] = 'Cuvantul cheie a fost salvat.';
+                                            $success[] = 'Keyword saved.';
                                     }
                             }
                             $show_table = false;
@@ -416,34 +367,35 @@ function ps_keywords_settings() {
                         case 'add': 
                             if(!empty($_POST)){
                                 if($_POST['keyword']=="") {
-                                        $errors[] = "<strong>Cuvantul cheie</strong> este obligatoriu.";
+                                        $errors[] = "<strong>Keyword</strong> required.";
                                 }
                                 if($_POST['title']=="") {
-                                        $errors[] = "<strong>Titlul</strong> este obligatoriu.";
+                                        $errors[] = "<strong>Title</strong> required.";
                                 }
                                 if($_POST['link']=="") {
-                                        $errors[] = "<strong>Link-ul</strong> este obligatoriu.";
+                                        $errors[] = "<strong>Link</strong> required.";
                                 }
-                                if($_POST['link'] != "" && !preg_match('#^https?://profitshare\.ro/l/#i', $_POST['link'])){
-                                        $errors[] = "<strong>Link-ul</strong> trebuie sa inceapa cu profitshare.ro/l/";
+								if($_POST['link'] != "" && !preg_match('#^https?://profitshare\.ro/l/#i', $_POST['link']) && config( 'PS_HOME' ) == 'http://profitshare.ro'){
+                                    $errors[] = "<strong>Your link</strong> must start with " . config( 'PS_HOME' ) . "/l/";
+                                }
+								if($_POST['link'] != "" && !preg_match('#^https?://profitshare\.bg/l/#i', $_POST['link']) && config( 'PS_HOME' ) == 'http://profitshare.bg'){
+                                    $errors[] = "<strong>Your link</strong> must start with " . config( 'PS_HOME' ) . "/l/";
                                 }
                                 if($_POST['openin']=="") {
-                                        $errors[] = "<strong>Deschide link in...</strong> este obligatoriu.";
+                                        $errors[] = "<strong>Open link in...</strong> required.";
                                 }
                                 if($_POST['tip_display']=="1") {
                                         if($_POST['tip_title']=="") {
-                                                $errors[] = "<strong>Titlu tooltip</strong> este obligatoriu.";
+                                                $errors[] = "<strong>Tooltip title</strong> required.";
                                         }
                                         if($_POST['tip_description']=="") {
-                                                $errors[] = "<strong>Descriere tooltip</strong> este obligatoriu.";
+                                                $errors[] = "<strong>Tooltip description</strong> required.";
                                         }
                                 }
-
                                 if(empty($errors)) {
                                         if( !preg_match('#^https?://#', $_POST['link'])) {
                                             $_POST['link'] = 'https://' . $_POST['link'];
                                         }
-                                    
                                         $wpdb->insert( 
                                                 $table_name, 
                                                 array( 
@@ -456,8 +408,7 @@ function ps_keywords_settings() {
                                                     'tip_title' => $_POST['tip_title'],
                                                     'tip_description' => $_POST['tip_description'],
                                                     'tip_image' => $_POST['tip_image']
-                                                ), 
-
+                                                ),
                                                 array( 
                                                     '%s', 
                                                     '%s',
@@ -470,17 +421,13 @@ function ps_keywords_settings() {
                                                     '%s'
                                                 ) 
                                         );
-
-                                        $success[] = 'Cuvantul cheie a fost salvat.';
+                                        $success[] = 'Keyword saved.';
                                 }
-                            }                        
-
+                            }
                             $show_table = false;
                             break;
                     }
                 }
-           
-
                 if(!empty($success) && is_array($success)){
                     ?>
                         <div id="message" class="updated fade">
@@ -490,7 +437,6 @@ function ps_keywords_settings() {
                         </div>
                     <?php
                 }              
-
                 if(!empty($errors) && is_array($errors)){
                     ?>
                         <div id="message" class="error fade">
@@ -500,8 +446,6 @@ function ps_keywords_settings() {
                         </div>
                     <?php
                 }
-              
-
                 // VIEWS
                 if(!empty($_REQUEST['do'])) {
                     switch($_REQUEST['do']) {
@@ -513,13 +457,13 @@ function ps_keywords_settings() {
                                     <table class="form-table">
                                         <tbody>
                                             <tr valign="top">
-                                                <th scope="row"><label for="keyword">Cuvant cheie</label></th>
+                                                <th scope="row"><label for="keyword">Keyword</label></th>
                                                 <td>
                                                     <input class="large-text" type="text" name="keyword" value="<?php echo !empty($_POST['keyword']) ? $_POST['keyword'] : $row['keyword']; ?>" />
                                                </td>
                                             </tr>
                                             <tr valign="top">
-                                                <th scope="row"><label for="title">Titlu</label></th>
+                                                <th scope="row"><label for="title">Title</label></th>
                                                 <td>
                                                     <input class="large-text" type="text" name="title" value="<?php echo !empty($_POST['title']) ? $_POST['title'] : $row['title']; ?>" />
                                                </td>
@@ -531,19 +475,19 @@ function ps_keywords_settings() {
                                                </td>
                                             </tr>  
                                             <tr valign="top">
-                                                <th scope="row"><label for="openin">Deschide link in</label></th>
+                                                <th scope="row"><label for="openin">Open link in</label></th>
                                                 <td>
                                                     <select name="openin">
-                                                        <option value="new"<?php echo (!empty($_POST['openin']) && $_POST['openin'] == 'new') || $row['openin'] == 'new' ? ' SELECTED' : ''; ?>>Fereastra noua</option>
-                                                        <option value="current"<?php echo (!empty($_POST['openin']) && $_POST['openin'] == 'current') || $row['openin'] == 'current' ? ' SELECTED' : ''; ?>>Fereastra actuala</option>
+                                                        <option value="new"<?php echo (!empty($_POST['openin']) && $_POST['openin'] == 'new') || $row['openin'] == 'new' ? ' SELECTED' : ''; ?>>New window or tab (_blank) </option>
+                                                        <option value="current"<?php echo (!empty($_POST['openin']) && $_POST['openin'] == 'current') || $row['openin'] == 'current' ? ' SELECTED' : ''; ?>>Same window or tab (_none)</option>
                                                     </select>
                                                </td>
                                             </tr>  
                                             <tr valign="top">
                                                 <th scope="row"><label for="tip_display">Tooltip</label></th>
                                                 <td>
-                                                    <label><input name="tip_display" id="tip_display" type="radio" value="y" onclick="toggleTips(1);"<?php echo (!empty($_POST['tip_display']) && $_POST['tip_display'] == 'y') || $row['tip_display'] == 'y' ? ' checked="checked"' : ''; ?>>Da</label>
-                                                    <label><input name="tip_display" id="tip_display" type="radio" value="n" onclick="toggleTips(0);"<?php echo (!empty($_POST['tip_display']) && $_POST['tip_display'] == 'n') || $row['tip_display'] == 'n' ? ' checked="checked"' : ''; ?>>Nu</label>
+                                                    <label><input name="tip_display" id="tip_display" type="radio" value="y" onclick="toggleTips(1);"<?php echo (!empty($_POST['tip_display']) && $_POST['tip_display'] == 'y') || $row['tip_display'] == 'y' ? ' checked="checked"' : ''; ?>>Yes</label>
+                                                    <label><input name="tip_display" id="tip_display" type="radio" value="n" onclick="toggleTips(0);"<?php echo (!empty($_POST['tip_display']) && $_POST['tip_display'] == 'n') || $row['tip_display'] == 'n' ? ' checked="checked"' : ''; ?>>No</label>
                                                </td>
                                             </tr>    
                                             <tr valign="top" class="tip_display_1 hide_display">
@@ -554,22 +498,22 @@ function ps_keywords_settings() {
                                                </td>
                                             </tr>   
                                             <tr valign="top" class="tip_display_1 hide_display">
-                                                <th scope="row"><label for="tip_title">Titlu tooltip</label></th>
+                                                <th scope="row"><label for="tip_title">Tooltip title</label></th>
                                                 <td>
                                                     <input class="large-text" type="text" name="tip_title" value="<?php echo !empty($_POST['tip_title']) ? $_POST['tip_title'] : $row['tip_title']; ?>" />
                                                </td>
                                             </tr>      
                                             <tr valign="top" class="tip_display_1 hide_display">
-                                                <th scope="row"><label for="tip_description">Descriere tooltip</label></th>
+                                                <th scope="row"><label for="tip_description">Tooltip description</label></th>
                                                 <td>
                                                     <input class="large-text" type="text" name="tip_description" value="<?php echo !empty($_POST['tip_description']) ? $_POST['tip_description'] : $row['tip_description']; ?>" />
                                                </td>
                                             </tr>  
                                             <tr valign="top" class="tip_display_1 hide_display">
-                                                <th scope="row"><label for="tip_image">Imagine tooltip</label></th>
+                                                <th scope="row"><label for="tip_image">Tooltip image</label></th>
                                                 <td>
                                                     <input class="upload_image_input" type="text" name="tip_image" value="<?php echo !empty($_POST['tip_image']) ? $_POST['tip_image'] : $row['tip_image']; ?>" id="upload_image_1" />
-                                                    <input class="button-primary upload_image_button" data-id="1" type="button" value="Selecteaza Imaginea" />
+                                                    <input class="button-primary upload_image_button" data-id="1" type="button" value="Select Image" />
                                                </td>
                                             </tr>                                          
                                             <tr valign="top">
@@ -582,7 +526,6 @@ function ps_keywords_settings() {
                                         </tbody>
                                     </table>
                                 </form>
-
 								<?php 
                             }
                             break;
@@ -592,13 +535,13 @@ function ps_keywords_settings() {
                                 <table class="form-table">
                                     <tbody>
                                         <tr valign="top">
-                                            <th scope="row"><label for="keyword">Cuvant cheie</label></th>
+                                            <th scope="row"><label for="keyword">Keyword</label></th>
                                             <td>
                                                 <input class="large-text" type="text" name="keyword" value="<?php echo !empty($_POST['keyword']) ? $_POST['keyword'] : ''; ?>" />
                                            </td>
                                         </tr>
                                         <tr valign="top">
-                                            <th scope="row"><label for="title">Titlu</label></th>
+                                            <th scope="row"><label for="title">Title</label></th>
                                             <td>
                                                 <input class="large-text" type="text" name="title" value="<?php echo !empty($_POST['title']) ? $_POST['title'] : ''; ?>" />
                                            </td>
@@ -610,19 +553,19 @@ function ps_keywords_settings() {
                                            </td>
                                         </tr>  
                                         <tr valign="top">
-                                            <th scope="row"><label for="openin">Deschide link in</label></th>
+                                            <th scope="row"><label for="openin">Open link in</label></th>
                                             <td>
                                                 <select name="openin">
-                                                    <option value="new"<?php echo !empty($_POST['openin']) && $_POST['openin'] == 'new' ? ' SELECTED' : ''; ?>>Fereastra noua</option>
-                                                    <option value="current"<?php echo !empty($_POST['openin']) && $_POST['openin'] == 'current' ? ' SELECTED' : ''; ?>>Fereastra actuala</option>
+                                                    <option value="new"<?php echo !empty($_POST['openin']) && $_POST['openin'] == 'new' ? ' SELECTED' : ''; ?>>New window or tab (_blank)</option>
+                                                    <option value="current"<?php echo !empty($_POST['openin']) && $_POST['openin'] == 'current' ? ' SELECTED' : ''; ?>>Same window or tab (_none)</option>
                                                 </select>
                                            </td>
                                         </tr>  
                                         <tr valign="top">
                                             <th scope="row"><label for="tip_display">Tooltip</label></th>
                                             <td>
-                                                <label><input name="tip_display" id="tip_display" type="radio" value="y" onclick="toggleTips(1);"<?php echo !empty($_POST['tip_display']) && $_POST['tip_display'] == 'y' ? ' checked="checked"' : ''; ?>>Da</label>
-                                                <label><input name="tip_display" id="tip_display" type="radio" value="n" onclick="toggleTips(0);"<?php echo !empty($_POST['tip_display']) && $_POST['tip_display'] == 'n' ? ' checked="checked"' : ''; ?><?php echo empty($_POST) ? ' checked="checked"' : ''; ?>>Nu</label>
+                                                <label><input name="tip_display" id="tip_display" type="radio" value="y" onclick="toggleTips(1);"<?php echo !empty($_POST['tip_display']) && $_POST['tip_display'] == 'y' ? ' checked="checked"' : ''; ?>>Yes</label>
+                                                <label><input name="tip_display" id="tip_display" type="radio" value="n" onclick="toggleTips(0);"<?php echo !empty($_POST['tip_display']) && $_POST['tip_display'] == 'n' ? ' checked="checked"' : ''; ?><?php echo empty($_POST) ? ' checked="checked"' : ''; ?>>No</label>
                                            </td>
                                         </tr>    
                                         <tr valign="top" class="tip_display_1 hide_display">
@@ -633,22 +576,22 @@ function ps_keywords_settings() {
                                            </td>
                                         </tr>   
                                         <tr valign="top" class="tip_display_1 hide_display">
-                                            <th scope="row"><label for="tip_title">Titlu tooltip</label></th>
+                                            <th scope="row"><label for="tip_title">Tooltip title</label></th>
                                             <td>
                                                 <input class="large-text" type="text" name="tip_title" value="<?php echo !empty($_POST['tip_title']) ? $_POST['tip_title'] : ''; ?>" />
                                            </td>
                                         </tr>      
                                         <tr valign="top" class="tip_display_1 hide_display">
-                                            <th scope="row"><label for="tip_description">Descriere tooltip</label></th>
+                                            <th scope="row"><label for="tip_description">Tooltip description</label></th>
                                             <td>
                                                 <input class="large-text" type="text" name="tip_description" value="<?php echo !empty($_POST['tip_description']) ? $_POST['tip_description'] : ''; ?>" />
                                            </td>
                                         </tr>  
                                         <tr valign="top" class="tip_display_1 hide_display">
-                                            <th scope="row"><label for="tip_image">Imagine tooltip</label></th>
+                                            <th scope="row"><label for="tip_image">Tooltip image</label></th>
                                             <td>
                                                 <input class="upload_image_input" type="text" name="tip_image" value="<?php echo !empty($_POST['tip_image']) ? $_POST['tip_image'] : ''; ?>" id="upload_image_1" />
-                                                <input class="button-primary upload_image_button" data-id="1" type="button" value="Selecteaza Imaginea" />
+                                                <input class="button-primary upload_image_button" data-id="1" type="button" value="Select Image" />
                                            </td>
                                         </tr>                                          
                                         <tr valign="top">
@@ -663,12 +606,9 @@ function ps_keywords_settings() {
                             break;
                     }
                 }
-				
-
-                /**
-                 * Arata tabel doar atunci cand e nevoie
+	            /**
+                 * Show table only when needed
                  */
-
                 if(!empty($show_table)) {
                     $keywords = new Keywords_List();
                     $keywords->prepare_items();
@@ -676,33 +616,29 @@ function ps_keywords_settings() {
                 }
 		?>		
 	 </div>
-
 	 <?php
 }
 
 function ps_conversions() {
-
 	/**
 	 *	@since: 1.0
 	 *	Pagina Conversii
 	 *	Afişează ultimele conversii preluate prin API
 	 *	Se poate scurta un link de la unul dintre advertiserii din baza de date
 	 */
-
 	?>
-
 	<div class="wrap">
-		<a href="http://profitshare.ro"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
+		<a href="<?php echo config( 'PS_HOME' ); ?>"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
 		<hr style="border-top: 1px dashed #7f8c8d;">
-		<h2>Conversii</h2>
-		<h3>Câştigul tău curent este în valoare de: <font style="color: #006D3E;"><?php echo ps_account_balance();?> RON</font></h3>
+		<h2>Conversions</h2>
+		<h3>Your Current earnings are: <font style="color: #006D3E;"><?php echo ps_account_balance();?></font></h3>
 		<form method="post" action="">
 			<table class="form-table">
 				<tr>
 					<td>
-						<input type="text" name="link" placeholder="http://www.flanco.ro/" id="link" class="regular-text" />
-						<input type="submit" name="submit_link" id="ps-green" value="Obţine link" /><br />
-						<span class="description">Exemplu de link generat: http://profitshare.ro/l/123456</span>
+						<input type="text" name="link" placeholder="http://" id="link" class="regular-text" />
+						<input type="submit" name="submit_link" id="ps-green" value="Get link" /><br />
+						<span class="description">Example of generated link: <?php echo config( 'PS_HOME' ); ?>/l/123456</span>
 					</td>
 				</tr>
 				<tr>
@@ -712,11 +648,11 @@ function ps_conversions() {
 						$ps_shorten_link = ps_shorten_link( 'WP Profitshare', $link );
 						if ( ! $ps_shorten_link['result'] ) {
 							?>
-							<div id="message" class="error"><p>A apărut o eroare sau linkul nu face parte din reţeaua Profitshare şi nu poate fi generat.</p></div>
+							<div id="message" class="error"><p>An error occurred or link is not part of Profitshare and can not be generated .</p></div>
 							<?php
 						} else {
 							?>
-							<td><font style="color: #006D3E; font-weight: bold;">Link generat:</font><br/><input id="shorten_link" onClick="this.setSelectionRange(0, this.value.length)" class="regular-text" type="text" value="<?php echo $ps_shorten_link['shorted']; ?>" /></td>
+							<td><font style="color: #006D3E; font-weight: bold;">Generted Link:</font><br/><input id="shorten_link" onClick="this.setSelectionRange(0, this.value.length)" class="regular-text" type="text" value="<?php echo $ps_shorten_link['shorted']; ?>" /></td>
 							<?php
 						}
 					}
@@ -734,100 +670,57 @@ function ps_conversions() {
 }
 
 function ps_history_links() {
-
 	/**
 	 *	@since: 1.0
-	 *	Pagina Istoric linkuri
-	 *	Afişează ultimele linkuri scurtat (manual sau automat)
+	 *	Link history Page
+	 *	Show latest generated links
 	 */
-
 	$history_links = new History_Links();
     $history_links->prepare_items();
-
 	?>
-
-
 	<div class="wrap">
-		<a href="http://profitshare.ro"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
+		<a href="<?php echo config( 'PS_HOME' ); ?>"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
 		<hr style="border-top: 1px dashed #7f8c8d;">
-		<h2>Istoric linkuri</h2>
+		<h2>Link history</h2>
 		<?php $history_links->display(); ?>
 	</div>
-
 	<?php
-
 }
 
 function ps_useful_info() {
-
-
 	/**
 	 *	@since: 1.0
-	 *	Pagina Informații utile
-	 *	Conține rubrica F.A.Q.
-	 *	Conține feed cu ultimele 2 articole din blog.profitshare.ro având excerpt 500 de caractere
+	 *	Help page
+	 *	Contains F.A.Q.
 	 */
-
 	?>
-
 	<div class="wrap">
-		<a href="http://profitshare.ro"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
+		<a href="<?php echo config( 'PS_HOME' ); ?>"><img src="<?php echo plugin_dir_url( __FILE__ ); ?>/images/profitshare-conversion.png" alt="Profitshare" /></a><br/>
+		
 		<hr style="border-top: 1px dashed #7f8c8d;">
-		<h2>Ultimele informaţii de pe blogul Profitshare</h2><br />
-
-		<?php
-
-		$rss = new DOMDocument();
-		$rss->load( 'http://blog.profitshare.ro/index.php/feed/' );
-		$feed = array();
-		foreach ( $rss->getElementsByTagName( 'item' ) as $node ) {
-			$item = array ( 
-				'title'	=> $node->getElementsByTagName( 'title' )->item(0)->nodeValue,
-				'desc'	=> $node->getElementsByTagName( 'description' )->item(0)->nodeValue,
-				'link'	=> $node->getElementsByTagName( 'link' )->item(0)->nodeValue,
-			);
-			array_push( $feed, $item );
-		}
-		$limit = 5;
-		for( $i = 0; $i < $limit; $i++ ) {
-			$title = str_replace( ' & ', ' &amp; ', $feed[ $i ]['title'] );
-			$link = $feed[ $i ]['link'];
-			$description = $feed[ $i ]['desc'];
-			preg_match_all( "/<p>(.*?)<\/p>/s", $description, $result );
-			echo '<p><strong><a href="' . $link . '" title="' . $title . '">' . $title . '</a></strong><br />';
-			if ( isset( $result[0][0] ) )
-				echo '<p>' . $result[0][0] . '</p><p></p>';
-		}
-
-		?>
-
-		<hr style="border-top: 1px dashed #7f8c8d;">
-
-		<h2>Întrebări frecvente</h2><br />
-		<strong>Ce este Profitshare?</strong>
+		<h2>Frequently Asked Questions</h2><br />
+		<strong>What is Profitshare?</strong>
 		<ul>
-			<li>Simplu! Este o platformă de marketing afiliat, adică un instrument de marketing bazat pe performanță.</li>
+			<li>Profitshare is an affiliate marketing network, that is, a performance driven marketing tool.</li>
 		</ul>
-		<strong>Ce este Advertiserul?</strong>
+		<strong>What is an advertiser?</strong>
 		<ul>
-			<li>Advertiserul este cel care solicită promovarea produselor sau serviciilor sale.</li>
+			<li>The advertiser is the one that wants to have its products or services advertised on the internet in order to obtain clients and increase its revenue.</li>
 		</ul>
-		<strong>Ce este Afiliatul?</strong>
+		<strong>What is an affiliate?</strong>
 		<ul>
-			<li>Afiliatul este cel care face promovarea produselor Advertiserilor prin metodele de promovare agreate (de exemplu în website-urile sale). Prin promovare, afiliatul obține un comision din vânzările generate.</li>
+			<li>The affiliate is the one that advertises products and services offered by advertisers, through agreed methods, and earns a percentage of each sale that is made as a result of this. </li>
 		</ul>
-		<strong>Cine este clientul?</strong>
+		<strong>Who is the client?</strong>
 		<ul>
-			<li>Clientul este cel care ajunge pe website-ul Advertiserului prin intermediul promovării făcute de Afiliat și care îndeplinește o anumită acțiune. Acțiunea poate să fie o comandă, înscriere, abonare etc.</li>
-			<li>Ca <strong>afiliat</strong> ești expus la o plajă mare de branduri, putând să alegi să promovezi dintre cele mai diverse servicii și produse. Pentru <strong>advertiseri</strong> cea mai mare oportunitate o reprezintă deschiderea către un sistem extins de ambasadori ai brandurilor, produselor și serviciilor din ofertă.</li>
+			<li>The client is the one that reaches advertisers' websites thanks to affiliate promotion. This client may then perform a pre-established action on the advertiser's website like: making a purchase, subscribing to a newsletter, signing up for an account etc.</li>
+			<li>As <strong>an affiliate</strong> you gain access to a wide range of brands and varied products and services that can satisfy any kind of advertising projects, using efficient affiliate marketing tools. As <strong>an advertiser</strong>, the biggest advantage is acquiring an extensive community of ambassadors for your products or services from the affiliate marketing network</li>
 		</ul>
-		<strong>Ce este Profitshare pentru afiliați?</strong>
+		<strong>What is Profitshare for affiliates?</strong>
 		<ul>
-			<li>Pluginul <strong>Profitshare pentru afiliați</strong> este instrumentul prin intermediul căruia poți crește rata conversiilor și câștiga bani. <strong>Profitshare pentru afiliați</strong> îți pune la dispoziție istoricul conversiilor tale, posibilitatea de a genera linkuri profitshare manual sau automat atunci când publici un articol, poți urmări câștigul tău curent direct din interfața Wordpress sau poți chiar înlocui în articolele deja existente pe site-ul tău, toate linkurile advertiserilor cu unele generatoare de venituri, profitshare.</li>
+			<li>The <strong>Profitshare affiliate plugin</strong> is a tool that helps you grow your conversion rate and gain money online. Profitshare for affiliates lets you see your conversion history, facilitates generating affiliate links automatically or manually whenever you publish a new post. You can also watch your current earnings directly from your WordPress interface and you can replace al your existing links with affiliate links so that you can earn money with all your previous posts.</li>
 		</ul>
 	</div>
-	
 	<?php
 }
-
 ?>

@@ -1,15 +1,11 @@
 <?php
-
 /*	History Links
  *	@ package: wp-profitshare
  *	@ since: 1.0
  *	Clasă pentru generarea tabelului cu ultimele linkuri scurtate
  */
-
 defined( 'ABSPATH' ) || exit;
 if ( ! class_exists( 'WP_List_Table' ) ) require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
-
-
 
 class History_Links extends WP_List_Table {
 	function column_default( $item, $column_name ) {
@@ -50,10 +46,10 @@ class History_Links extends WP_List_Table {
 
 	function get_columns() {
 		$columns = array(
-			'source'	=>	'Sursă',
+			'source'	=>	'Source',
 			'link'		=>	'Link advertiser',
 			'shorted'	=>	'Link profitshare',
-			'date'		=>	'Data',
+			'date'		=>	'Date',
 		);
 		return $columns;
 	}
@@ -84,7 +80,7 @@ class History_Links extends WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable );
 		$this->process_bulk_action();
 
-		// Se obţin informaţiile din baza de date, pentru listare
+		// Geting DB info, for listing
 
 		$query = "SELECT * FROM " . $wpdb->prefix . "ps_shorted_links";
 		$data = $wpdb->get_results( $query, ARRAY_A );

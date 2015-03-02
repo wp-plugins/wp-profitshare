@@ -3,10 +3,32 @@
  *	@ package: wp-profitshare
  *	@ since: 1.0
  */
+$ps_api_config = array(
+			'RO'	=>	array(	'NAME'		=>	'Romania',
+								'API_URL'	=>	'http://api.profitshare.ro',
+								'PS_HOME'	=>	'http://profitshare.ro',
+								'CURRENCY'	=>	'RON',
+							),
+			'BG'	=>	array(	'NAME'		=>	'Bulgaria',
+								'API_URL'	=>	'http://api.profitshare.bg',
+								'PS_HOME'	=>	'http://profitshare.bg',
+								'CURRENCY'	=>	'LEV',
+							)
+		);
+function config( $param ) {
+	/**
+	 *	@since: 1.2
+	 *	Get values of config matrix from the user country
+	 */
+	global $ps_api_config;
+	$current_user = wp_get_current_user();
+	$country = get_user_meta( $current_user->ID, 'ps_api_country', true );
+	return $ps_api_config[ $country ][ $param ];
+}
 function ps_init_settings() {
 	/**
 	 *	@since: 1.0
-	 *	Sunt create tabelele plugin-ului și sunt configurate anumite valori
+	 *	Creating tables
 	 */
 	global $wpdb;
 	$queries = array();
@@ -18,7 +40,7 @@ function ps_init_settings() {
 		UNIQUE KEY (`advertiser_id`),
 		UNIQUE KEY (`name`),
 		PRIMARY KEY (`ID`)
-		);";
+		)CHARSET=utf8;";
 	$queries[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_conversions (
 		`ID` smallint(5) unsigned NOT NULL auto_increment,
 		`order_date` char(20) NOT NULL,
@@ -26,7 +48,7 @@ function ps_init_settings() {
 		`order_status` char(8) NOT NULL,
 		`advertiser_id` mediumint(5) unsigned NOT NULL,		
 		PRIMARY KEY (`ID`)
-		);";
+		)CHARSET=utf8;";
    $queries[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_keywords (
                 `ID` mediumint(9) NOT NULL auto_increment,
                 `keyword` varchar(255) NOT NULL default '',
@@ -39,7 +61,7 @@ function ps_init_settings() {
                 `tip_title` varchar(255) default NULL,
                 `tip_image` varchar(255) default NULL,
                 PRIMARY KEY (`ID`)
-  );";
+  )CHARSET=utf8;";
 	$queries[] = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "ps_shorted_links (
 		`ID` smallint(5) unsigned NOT NULL auto_increment,
 		`source` char(100) NOT NULL,
@@ -47,22 +69,22 @@ function ps_init_settings() {
 		`shorted` char(50) NOT NULL,
 		`date` int(10) NOT NULL,
 		PRIMARY KEY (`ID`)
-		);";
+		)CHARSET=utf8;";
 	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
   foreach($queries as $query){
      dbDelta($query);
   }
   
- // seteaza versiune curenta
- update_option('ps_installed_version', PS_VERSION);
+ // Set PS Version
+	update_option('ps_installed_version', PS_VERSION);
 }
 
 function ps_remove_settings() {
 	/**
 	 *	@since: 1.0
-	 *	Se curăță urmele plugin-ului, după dezactivare
-	 *	Tabelul *_ps_shorted_links rămâne intact pentru istoric și o eventuală reactivare
-	 *	Tabelul *_ps_keywords rămâne intact pentru istoric și o eventuală reactivare
+	 *	Cleaning DB after uninstall
+	 *	Table *_ps_shorted_links remains for future installs
+	 *	Table *_ps_keywords remains for future installs
 	 */
 	global $wpdb;
 	$current_user = wp_get_current_user();
@@ -79,17 +101,19 @@ function ps_remove_settings() {
 	$wpdb->query( "DROP TABLE " . $wpdb->prefix . "ps_conversions" );
 }
 
-function ps_connection_check( $api_user, $api_key ) {
+function ps_connection_check( $api_user, $api_key, $api_country ) {
 	/**
 	 *	@since: 1.0
-	 *	Se verifică dacă se poate face conexiunea la api.profitshare.ro prin cURL
+	 *	Check API connexion through cURL
 	 *	@param:		(string)	$api_user
 	 *				(string)	$api_key
+	 *				(string)	$api_country
 	 *	@return:	(bool)
 	 */
 	$current_user = wp_get_current_user();
 	update_user_meta( $current_user->ID, 'ps_api_user', $api_user );
 	update_user_meta( $current_user->ID, 'ps_api_key', $api_key );
+	update_user_meta( $current_user->ID, 'ps_api_country', $api_country );
 	$json = ps_api_connect( 'affiliate-campaigns', 'GET', array(), 'page=1' );
 	if ( false !== $json ) {
 		update_user_meta( $current_user->ID, 'ps_is_api_connected', 1 );
@@ -98,6 +122,7 @@ function ps_connection_check( $api_user, $api_key ) {
 	} else {
 		delete_user_meta( $current_user->ID, 'ps_api_user' );
 		delete_user_meta( $current_user->ID, 'ps_api_key' );
+		delete_user_meta( $current_user->ID, 'ps_api_country' );
 		return false;
 	}
 }
@@ -105,8 +130,8 @@ function ps_connection_check( $api_user, $api_key ) {
 function ps_account_balance() {
 	/**
 	 *	@since: 1.0
-	 *	Se obţine câștigul curent Profitshare prin API
-	 *	Valoarea se reactualizează o dată la 60 de minute
+	 *	Get current ballance
+	 *	Update every 60 minutes
 	 */
 	if ( get_option( 'ps_last_check_account_balance' ) + 60 * 60 < time() ) {
 		$json	= ps_api_connect( 'affiliate-info', 'GET', array() );
@@ -115,15 +140,18 @@ function ps_account_balance() {
 		update_option( 'ps_last_check_account_balance', time() + 60 * 60 );
 		return $total;
 	} else {
-		return get_option( 'ps_account_balance' );
+		global $ps_api_config;
+		$current_user = wp_get_current_user();
+		$country = get_user_meta( $current_user->ID, 'ps_api_country', true );
+		return get_option( 'ps_account_balance' ) . ' ' . config( 'CURRENCY' );
 	}
 }
 
 function ps_update_conversions() {
 	/**
 	 *	@since: 1.0
-	 *	Se obţin conversiile de pe Profitshare şi se face cache în baza de date
-	 *	Informațiile se actualizează o dată la 6 ore
+	 *	Get PS conversions and chaching into DB
+	 *	Update every 6 hours
 	 */
 	global $wpdb;
 	$current_user = wp_get_current_user();
@@ -131,7 +159,7 @@ function ps_update_conversions() {
 		update_option( 'ps_last_conversions_update', time() + 60 * 60 * 6 );
 		$json = ps_api_connect( 'affiliate-commissions', 'GET', array(), 'page=1' );
 		$data = $json['result']['commissions'];
-		$wpdb->query( "TRUNCATE " . $wpdb->prefix . "ps_conversions" );	// Se goleşte tabelul cu ultimele conversii
+		$wpdb->query( "TRUNCATE " . $wpdb->prefix . "ps_conversions" );	// Cleaning table 
 		if ( ! empty( $data ) )
 			for ( $i = 0; $i < 25; $i++ ) {
 				$insert_data = array(
@@ -149,8 +177,8 @@ function ps_update_conversions() {
 function ps_update_advertisers_db() {
 	/**
 	 *	@since: 1.0
-	 *	Se obţine lista de advertiseri din reţeaua Profitshare şi se face cache în baza de date
-	 *	Informațiile se actualizează o dată la 24 ore
+	 *	Get advertisers list and caching
+	 *	Update every 24 hours
 	 */
 	global $wpdb;
 	$current_user = wp_get_current_user();
@@ -175,8 +203,8 @@ function ps_update_advertisers_db() {
 function ps_replace_links( $where='posts' ) {
 	/**
 	 *	@since: 1.0
-	 *	Înlocuieşte toate linkurile advertiserilor din toate articolele de pe blog, cu linkuri scurte ale acestora
-	 *	Funcţia returnează (cu ajutorul funcției replace_links_post() și shorten_link()) numărul de linkuri scurtate din toate articolele
+	 *	Replace all advertisers links from blog
+	 *	Returns (with functions: replace_links_post() and shorten_link()) how many links have been replaced
 	 *	@return:	(int)	$shorted_links
 	 */
 	global $wpdb;
@@ -199,7 +227,7 @@ function ps_replace_links( $where='posts' ) {
 function ps_replace_links_post( $post_id ) {
 	/**
 	 *	@since: 1.0
-	 *	Înlocuiește toate link-urile dintr-un articol cu link-uri ProfitShare și returnează numărul de linkuri scurtate
+	 *	Replace all links from a post and returns how many links have been replaced
 	 *	@param:		(Object)	$post
 	 *	@return:	(int)		$total_links
 	 */
@@ -228,14 +256,14 @@ function ps_auto_convert_posts( $post_id ) {
 function ps_replace_links_comment( $comment_id ) {
 	/**
 	 *	@since: 1.1
-	 *	Înlocuiește toate link-urile dintr-un articol cu link-uri ProfitShare și returnează numărul de linkuri scurtate
+	 *	Replace all comments links from a post and returns how many links have been replaced
 	 *	@param:		(Object)	$post
 	 *	@return:	(int)		$total_links
 	 */
 	 
 	global $wpdb;
 	$content	=	get_comment_text( $comment_id );
-	$title		=	'Comentariul #' . $comment_id;
+	$title		=	'Comment #' . $comment_id;
 	$total_links = 0;
 	if ( ! empty( $content ) && ! empty( $title ) ) {
 		$links			=	ps_get_html_links( make_clickable( $content ) );
@@ -254,23 +282,21 @@ function ps_auto_convert_comments( $comment_id ) {
 }
 
 function ps_get_html_links( $content ) {
-
 	/**
 	 *	@since: 1.1
-	 *	Se extrag toate linkurile din conţinutul unui articol şi se pun într-un vector
-	 *	Funcţia returnează vectorul cu linkuri
-	 *	Funcția a fost îmbunătățită începând cu versiunea 1.1 folosind clasa DOMDocument()
+	 *	Extracting all links from post content and placing them into a vector
+	 *	Function returns the vector with links
+	 *	The function have been upgraded starting with version 1.1 by using DOMDocument() class
 	 *	@param:		(string)	$text;
 	 *	@return:	(array)		$links
 	 */
-	 
 	global $wpdb;
 	$DOMDoc = new DOMDocument();
 	@$DOMDoc->loadHTML( $content );
 	$links = array();
     foreach( $DOMDoc->getElementsByTagName('a') as $link ) {
     	$check_advertiser = $wpdb->get_results( "SELECT COUNT(*) as count FROM " . $wpdb->prefix . "ps_advertisers WHERE link='" . ps_clear_url( $link->getAttribute('href') ) . "'", OBJECT );
-		if ( $check_advertiser[0]->count )
+		if ( $check_advertiser[0]->count || strpos( $link->getAttribute('href'), 'm.' ) )
 			$links[] = array(
 				'url'	=>	$link->getAttribute('href'),
 				'text'	=>	$link->nodeValue
@@ -300,7 +326,7 @@ function ps_shorten_link( $source, $link ) {
 		'result'	=>	0
 	);
 	$check_link = $wpdb->get_results( "SELECT shorted FROM " . $wpdb->prefix . "ps_shorted_links WHERE link='" . $link . "'", OBJECT );
-	if ( empty( $link ) || strpos( $link, 'profitshare.ro/l/' ) )
+	if ( empty( $link ) || strpos( $link, config( 'PS_HOME' ) . '/l/' ) )
 		$result['result'] = 0;
 	else if ( ! empty( $check_link[0]->shorted ) ) {
 		$result['shorted']	=	$check_link[0]->shorted;
@@ -333,8 +359,8 @@ function ps_shorten_link( $source, $link ) {
 function ps_clear_url( $url ) {
 	/**
 	 *	@since: 1.0
-	 *	Curăţă adresa url primită prin parametrul funcției
-	 *	Utilitate: o comparaţie sigură a linkurilor din articole cu cele ale advertiserilor
+	 *	Cleaning URL trough function parameters C
+	 *	utility: Secure comparing for links between the post content and advertisers links.
 	 *	@param:		(string)	$url
 	 *	@return:	(string)	$url
 	 */
@@ -346,8 +372,8 @@ function ps_clear_url( $url ) {
 function ps_filter_links( $content ) {
 	/**
 	 *	@since: 1.1
-	 *	Se înlocuiesc linkurile lungi din articole cu link-urile scurte aferente fiecăruia
-	 *	Funcția este referință la filtrul pentru 'the_content' și 'comment_text'
+	 *	Changing long links from post content with the short ones. 
+	 *	The function is referring to the filter for 'the_content' and 'comment_text'
 	 *	@param:		(string)	$content
 	 *	@return:	(string)	$content
 	 */
@@ -362,9 +388,9 @@ function ps_filter_links( $content ) {
 			for ( $j = 0; $j < count( $anchors[0] ); $j++ )
 				if ( strpos( $anchors[0][ $j ], $links[ $i ]['url'] ) ) {
 					$doc = new DOMDocument();
-					$doc->loadHTML( $anchors[0][ $j ] );
+					$doc->loadHTML('<?xml encoding="UTF-8">' . $anchors[0][$j]);
 					$link = $doc->getElementsByTagName('a');
-					$new_content = '<a href="' . $shorted[0]->shorted . '" target="_blank" rel="nofollow">' . $link->item(0)->nodeValue . ' <img src="' . plugins_url( '../images/hyperlink.png', __FILE__ ) . '" style="display: inline;" alt="Profitshare link" /></a>';
+					$new_content = '<a href="' . $shorted[0]->shorted . '" target="_blank" rel="nofollow">' . $link->item(0)->nodeValue . '</a>';
 					$content = str_replace( $anchors[0][ $j ], $new_content, $content );
 					$content = str_replace( $links[ $i ]['url'], $shorted[0]->shorted, $content );
 				}
@@ -376,31 +402,31 @@ function ps_filter_links( $content ) {
 function ps_translate_month( $month ) {
 	/**
 	 *	@since: 1.0
-	 *	Traduce lunile anului în limba română
-	 *	Funcţia returnează numele lunii în limba română
+	 *	Translate months of the year in english
+	 *	The function returns english months
 	 *	@param:		(int)		$month
 	 *	@return:	(string)
 	 */
 	switch ( $month ) {
-		case 1:		return 'ianuarie'; break;
-		case 2:		return 'februarie'; break;
-		case 3:		return 'martie'; break;
-		case 4:		return 'aprilie'; break;
-		case 5:		return 'mai'; break;
-		case 6:		return 'iunie'; break;
-		case 7:		return 'iulie'; break;
-		case 8:		return 'august'; break;
-		case 9:		return 'septembrie'; break;
-		case 10:	return 'octombrie'; break;
-		case 11:	return 'noiembrie'; break;
-		default:	return 'decembrie';	
+		case 1:		return 'January'; break;
+		case 2:		return 'February'; break;
+		case 3:		return 'March'; break;
+		case 4:		return 'April'; break;
+		case 5:		return 'May'; break;
+		case 6:		return 'June'; break;
+		case 7:		return 'July'; break;
+		case 8:		return 'August'; break;
+		case 9:		return 'September'; break;
+		case 10:	return 'October'; break;
+		case 11:	return 'November'; break;
+		default:	return 'December';	
 	}
 }
 
 function ps_api_connect( $path, $method = 'GET', $post_data = array(), $query_string = "") {
 	/**
 	 *	@since: 1.0
-	 *	Conexiune prin cURL la API-ul de la Profitshare
+	 *	Connexion trough cURL for Profitshare API
 	 *	@param:		(string)		$path
 	 *				(string)		$method
 	 *				(array)			$post_data
@@ -408,9 +434,15 @@ function ps_api_connect( $path, $method = 'GET', $post_data = array(), $query_st
 	 *	@return:	(bool|string)	FALSE|$content
 	 */
 	if ( is_callable( 'curl_init' ) ) {
+		$current_user	= wp_get_current_user();
+		$ps_api_user	= get_user_meta( $current_user->ID, 'ps_api_user', true );
+		$ps_api_key		= get_user_meta( $current_user->ID, 'ps_api_key', true );
+		$ps_api_country = get_user_meta( $current_user->ID, 'ps_api_country', true );
+		global $ps_api_config;
+		$api_url = $ps_api_config[ $ps_api_country ]['API_URL'];
 		$curl_init = curl_init();
 		curl_setopt( $curl_init, CURLOPT_HEADER, false );
-		curl_setopt( $curl_init, CURLOPT_URL, PS_URL . "/" . $path . "/?" . $query_string );
+		curl_setopt( $curl_init, CURLOPT_URL, $api_url . "/" . $path . "/?" . $query_string );
 		curl_setopt( $curl_init, CURLOPT_CONNECTTIMEOUT, 60 );
 		curl_setopt( $curl_init, CURLOPT_TIMEOUT, 30 );
 		curl_setopt( $curl_init, CURLOPT_RETURNTRANSFER, true );
@@ -420,9 +452,6 @@ function ps_api_connect( $path, $method = 'GET', $post_data = array(), $query_st
 			curl_setopt( $curl_init, CURLOPT_POST, true );
 			curl_setopt( $curl_init, CURLOPT_POSTFIELDS, http_build_query( $post_data ) );
 		}
-		$current_user		= wp_get_current_user();
-		$ps_api_user		= get_user_meta( $current_user->ID, 'ps_api_user', true );
-		$ps_api_key			= get_user_meta( $current_user->ID, 'ps_api_key', true );
 		$auth_data	= array(
 			'api_user'	=>	$ps_api_user,
 			'api_key'	=>	$ps_api_key

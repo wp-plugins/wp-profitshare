@@ -1,17 +1,14 @@
 <?php
-
 /* 	Keywords List
  * 	@ package: wp-profitshare
  * 	@ since: 1.0
  * 	Clasă pentru generarea tabelului cu lista de cuvinte cheie
  */
-
 defined('ABSPATH') || exit;
 if (!class_exists('WP_List_Table'))
     require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 
 class Keywords_List extends WP_List_Table {
-
     function column_default($item, $column_name) {
         switch ($column_name) {
             case 'keyword':
@@ -19,7 +16,7 @@ class Keywords_List extends WP_List_Table {
             case 'link':
                 return $item['link'];
             case 'action':
-                return '<a href="' . admin_url('admin.php?page=ps_keywords_settings&do=edit&keyword_id=' . $item['ID']) . '">Editeaza</a> | <a href="' . admin_url('admin.php?page=ps_keywords_settings&do=delete&keyword_id=' . $item['ID']) . '">Sterge</a>';
+                return '<a href="' . admin_url('admin.php?page=ps_keywords_settings&do=edit&keyword_id=' . $item['ID']) . '">Edit</a> | <a href="' . admin_url('admin.php?page=ps_keywords_settings&do=delete&keyword_id=' . $item['ID']) . '">Delete</a>';
             default:
                 return print_r($item);
         }
@@ -48,9 +45,9 @@ class Keywords_List extends WP_List_Table {
 
     function get_columns() {
         $columns = array(
-            'keyword' => 'Cuvant cheie',
+            'keyword' => 'Keyword',
             'link' => 'Link',
-            'action' => 'Actiune'
+            'action' => 'Action'
         );
         return $columns;
     }
@@ -78,7 +75,7 @@ class Keywords_List extends WP_List_Table {
         $this->_column_headers = array($columns, $hidden, $sortable);
         $this->process_bulk_action();
 
-        // Se obţin informaţiile din baza de date, pentru listare
+        // Geting DB info, for listing
 
         $query = "SELECT * FROM " . $wpdb->prefix . "ps_keywords";
         $data = $wpdb->get_results($query, ARRAY_A);
@@ -101,7 +98,5 @@ class Keywords_List extends WP_List_Table {
             'total_pages' => ceil($total_items / $per_page)
         ));
     }
-
 }
-
 ?>
