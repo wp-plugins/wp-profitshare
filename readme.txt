@@ -20,7 +20,7 @@ Profitshare is the affiliate marketing network with the highest sales in Romania
 1. Upload "wp-profitshare" in the `/wp-content/plugins/ folder.
 2. Activate the plugin from the "Plugins" section in your WordPress admin panel.
 3. After activation you'll find the new Profitshare menu situated in your left sidebar.
-4. Configure your settings with your API Key and API user from the "Plugin Settings" menu. Find out what is your API Key and API user from your Profitshare account (http://profitshare.ro/affiliate/account). If you don't find these credentials there please send a request at suppprt@profitshare.ro.
+4. Configure your settings with your API Key and API user from the "Plugin Settings" menu. Find out what is your API Key and API user from your Profitshare account (http://profitshare.ro/affiliate/account). If you don't find these credentials there please send a request at suppoprt@profitshare.ro.
 5. Good luck converting!
 
 
