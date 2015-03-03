@@ -258,7 +258,7 @@ function ps_account_settings() {
 				<input type="submit" name="links_in_comments" id="<?php echo $form_comment['css_id']; ?>" value="<?php echo $form_comment['input_value']; ?>" />
 			</form><br/><br/>			
 			<span class="description">* By clicking on "Generate!" all your direct links from all your posts/ comments published so far will be converted into affiliate links of this form  <?php echo config( 'PS_HOME' ); ?>/l/123456.<br/>
-			By clicking on "Activate!" all the links from your future posts/ comments will be automatically converted into Profitshare affiliate links.<br/>
+			By clicking on "Enable!" all the links from your future posts/ comments will be automatically converted into Profitshare affiliate links.<br/>
 			<strong>We recommend making a backup of you database before running this functionality.</strong></span>
 			<?php
 		}
